@@ -2,6 +2,7 @@ package controladores;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.time.LocalDateTime;
@@ -17,56 +18,69 @@ public class ControladorLearningPath {
 	    this.learningPaths = new HashMap<>();
 	}
 	
-	public void imprimirLearningPaths() {
-		Set<Integer> ids = learningPaths.keySet();
-		System.out.println("\nEstos son los learning paths disponibles (El numero a su lado corresponde a su id).");
-		for (int id : ids) {
-			System.out.printf("%d.", id);
-			System.out.printf("\n Titulo: %s.", learningPaths.get(id).getTitulo());
-			System.out.printf("\n Descripcion: %s.", learningPaths.get(id).getDescripcionGeneral());
-			System.out.printf("\n Creador: %s.", learningPaths.get(id).getLoginCreador());
-			System.out.printf("\n FechaCreacion: %s.", learningPaths.get(id).getFechaCreacion());
-			System.out.printf("\n FechaModificacion: %s.", learningPaths.get(id).getFechaModificacion());
-			System.out.printf("\n Nivel de dificultad: %s.", learningPaths.get(id).getNivelDificultad());
-			System.out.printf("\n Duracion en minutos: %s.\n", learningPaths.get(id).getDuracion());
-			System.out.printf("\n Version: %s.", learningPaths.get(id).getVersion());
-		}
+	public LearningPath getLearningPath(int idLp) {
+		LearningPath lp = learningPaths.get(idLp);
+		return lp;
 	}
 	
-	public void crearLearningPath(String titulo, String descripcion, String nivelDificultad, int duracion, HashMap<Integer, Boolean> idActividades, ControladorActividad AC, String loginActual) {
-		LocalDateTime fechaCreacion = LocalDateTime.now();
-		LocalDateTime fechaModificacion = LocalDateTime.now();
-		Set<Integer> setIds = idActividades.keySet();
-		HashMap<Actividad, Boolean> actividades = new HashMap<>();
-		for (int id : setIds) {
-			actividades.put(AC.getActividad(id), idActividades.get(id));
-		}
+	public Collection<LearningPath> getLearningPaths() {
+		Collection<LearningPath> lps = learningPaths.values();
+		return lps;
+	}
+	
+	public int crearLearningPath(String loginActual) {
+		LocalDateTime fecha = LocalDateTime.now();
+		int id = learningPaths.size() + 1;
+		LearningPath lp = new LearningPath(id, loginActual, 0, fecha, fecha);
+		learningPaths.put(id, lp);
+		return id;
+	}
+	
+	public int crearLearningPathEditado(int idLp, String loginActual) {
+		LearningPath lpOriginal = learningPaths.get(idLp);
+		LocalDateTime fecha = LocalDateTime.now();
+		int id = learningPaths.size() + 1;
+		LearningPath lp = new LearningPath(id, loginActual, (lpOriginal.getVersion() + 1), lpOriginal.getFechaCreacion(), fecha);
+		learningPaths.put(id, lp);
+		return id;
+	}
+	
+	public void editarTitulo(int id, String titulo) {
+		LearningPath lp = learningPaths.get(id);
+		lp.setTitulo(titulo);
+	}
+	
+	public void editarDescripcionGeneral(int id, String descripcion) {
+		LearningPath lp = learningPaths.get(id);
+		lp.setDescripcionGeneral(descripcion);
+	}
+	
+	public void editarNivelDificultad(int id, String nivelDificultad) {
+		LearningPath lp = learningPaths.get(id);
+		lp.setNivelDificultad(nivelDificultad);
+	}
+	
+	public void editarDuracion(int id, int duracion) {
+		LearningPath lp = learningPaths.get(id);
+		lp.setDuracion(duracion);
+	}
+	
+	public void editarActividades(int id, HashMap<Actividad, Boolean> actividades) {
+		LearningPath lp = learningPaths.get(id);
+		lp.setActividades(actividades);
+	}
+	
+	public void editarVersion(int id) {
+		LearningPath lp = learningPaths.get(id);
+		lp.setVersion(lp.getVersion() + 1);
+	}
+	
+	public void editarFechaModificacion(int id) {
+		LearningPath lp = learningPaths.get(id);
+		LocalDateTime fecha = LocalDateTime.now();
+		lp.setFechaModificacion(fecha);
+	}
 		
-		LearningPath lp = new LearningPath(titulo, descripcion, nivelDificultad, duracion, fechaCreacion, fechaModificacion, 0, actividades, loginActual);
-		learningPaths.put(learningPaths.size() + 1, lp);
-	}
-	
-	public void crearLearningPath(String titulo, String descripcion, String nivelDificultad, int duracion, HashMap<Integer, Boolean> idActividades, ControladorActividad AC, String loginActual, int idLP) {
-		LearningPath original = learningPaths.get(idLP);
-		if (!(learningPaths.containsKey(idLP))) {
-			System.out.println("El learning path con la id pedida no existe");
-		} else {
-			if (!(loginActual.equals(original.getLoginCreador()))) {
-				System.out.println("Usted no es el creador de este learning path, no tiene derecho a modificarlo");
-			} else { 
-				LocalDateTime fechaCreacion = original.getFechaCreacion();
-				LocalDateTime fechaModificacion = LocalDateTime.now();
-				Set<Integer> setIds = idActividades.keySet();
-				HashMap<Actividad, Boolean> actividades = new HashMap<>();
-				for (int id : setIds) {
-					actividades.put(AC.getActividad(id), idActividades.get(id));
-				}
-				LearningPath lp = new LearningPath(titulo, descripcion, nivelDificultad, duracion, fechaCreacion, fechaModificacion, original.getVersion() + 1, actividades, loginActual);
-				learningPaths.put(learningPaths.size() + 1, lp);
-			}
-		}
-	}
-	
 	public ArrayList<Integer> getActividadesLP(int idLP) {
 		ArrayList<Integer> ids = new ArrayList<>();
 		LearningPath lp = learningPaths.get(idLP);
@@ -121,7 +135,7 @@ public class ControladorLearningPath {
                     Integer version = Integer.parseInt(parte[6]);
                     String Actividades= parte[7];
                     String logInCreador = parte[8];
-                    learningPaths.put(learningPaths.size() + 1, new LearningPath(titulo, descripcion, dificultad, duracion, fechaCreacion, fechaModificacion, version, null, logInCreador)); // Crea un nuevo estudiante
+                    learningPaths.put(learningPaths.size() + 1, new LearningPath(version, logInCreador, version, fechaCreacion, fechaModificacion));
                 }
             }
             System.out.println("Datos cargados exitosamente desde " + archivo.getAbsolutePath() + ". Total de estudiantes: " + learningPaths.size());
