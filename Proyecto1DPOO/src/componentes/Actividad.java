@@ -150,7 +150,8 @@ public class Actividad {
 		return notaMinima;
 	}
 	
-	public void setNotaMinima(float notaMinima) {
+	public void setNotaMinima(float notaMinima) 
+	{
 		this.notaMinima = notaMinima;
 	}
 }
