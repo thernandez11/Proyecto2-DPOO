@@ -90,7 +90,7 @@ public class ControladorEstudiante {
             }
             System.out.println("Datos cargados exitosamente desde " + archivo.getAbsolutePath() + ". Total de estudiantes: " + estudiantes.size());
         } catch (FileNotFoundException e) {
-            System.out.println("El archivo no existe. Se creará al guardar.");
+            System.out.println("El archivo no existe. Se creará al cerrar la aplicacion.");
         } catch (IOException e) {
             System.err.println("Error al cargar los datos: " + e.getMessage());
             throw e; // Propagar la excepción para manejarla más arriba si es necesario

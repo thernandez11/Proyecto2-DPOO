@@ -8,32 +8,34 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-public class ConsolaProfesoresCreadores {
+public class ConsolaProfesoresRevisores {
 	private ControladorActividad AC;
 	private ControladorEstudiante EC;
 	private ControladorLearningPath LPC;
 	private ControladorProfesor PC;
+	private ControladorRegistros RGC;
 	private ControladorResena RC;
 	private Scanner input;
 	private String loginActual;
 	private String rolActual;
 	
-	public ConsolaProfesoresCreadores() {
+	public ConsolaProfesoresRevisores() {
 		this.AC = new ControladorActividad();
         this.EC = new ControladorEstudiante();
         this.LPC = new ControladorLearningPath();
         this.PC = new ControladorProfesor();
+        this.RGC = new ControladorRegistros();
         this.RC = new ControladorResena();
         this.input = new Scanner(System.in);
     }
-
-	//Main y consola principal profesores creadores
+	
 	public static void main(String[] args) throws IOException {
 		
-		ConsolaProfesoresCreadores c = new ConsolaProfesoresCreadores();
+		ConsolaProfesoresRevisores c = new ConsolaProfesoresRevisores();
 		c.consolaRegistro();
 		c.input.close();
 	}
+	
 	private void consolaRegistro() throws IOException {
 		cargarDatos();
 		int respuesta;
@@ -66,10 +68,11 @@ public class ConsolaProfesoresCreadores {
 					+ "6. Crear reseña\n"
 					+ "7. Editar learning path\n"
 					+ "8. Editar actividad\n"
-					+ "9. Salir");
+					+ "9. Revisar progreso estudiante\n"
+					+ "10. Salir");
 			respuesta = input.nextInt();
 			input.nextLine();
-			if (respuesta < 1 || respuesta > 9) {
+			if (respuesta < 1 || respuesta > 10) {
 				System.out.println("El numero que ha ingresado no esta en las opciones disponibles. Intente de nuevo.");
 			}
 			switch (respuesta) {
@@ -97,12 +100,15 @@ public class ConsolaProfesoresCreadores {
 				case 8:
 					editarActividad();
 					break;
+				case 9:
+					revisarProgreso();
+					break;
 			}
-		} while (respuesta != 9);
+		} while (respuesta != 10);
 		salvarDatos();
 	}
 	
-	//Salvar y cargar datos
+
 	private void salvarDatos() throws IOException {
 		EC.guardarEstudiantesEnArchivo("estudiantes.txt");
 		PC.guardarProfesoresEnArchivo("profesores.txt");
@@ -116,7 +122,6 @@ public class ConsolaProfesoresCreadores {
 		RC.cargarResenasDesdeArchivo("resenas.txt");
 	}
 
-	//Registrar y ingresar profesores
 	private void registrarProfesor() {
 		
 		System.out.println("Ingrese su login:");
@@ -131,6 +136,7 @@ public class ConsolaProfesoresCreadores {
 			System.out.println("Usuario registrado exitosamente!");
 		}
 	}
+
 	private void ingresarProfesor() {
 		
 		System.out.println("\nIngrese su login:");
@@ -152,7 +158,6 @@ public class ConsolaProfesoresCreadores {
 		}
 	}
 
-	//Crear componentes Learning Paths
 	private void crearActividad() {
 		int idA = AC.crearActividad(loginActual);
 				
@@ -254,7 +259,6 @@ public class ConsolaProfesoresCreadores {
 		System.out.println("Reseña creada de manera exitosa!");
 	}
 	
-	//Seleccionadores de actividades
 	private HashMap<Actividad, Boolean> seleccionadorActividadesLearningPath() {
 		int id;
 		Boolean obligatoria;
@@ -358,6 +362,7 @@ public class ConsolaProfesoresCreadores {
 			System.out.println("Usted no es el creador de esta actividad, si quiere editarla, clonela.");
 		}
 	}
+	
 	private void menuEdicionActividad(int idA) {
 		int respuesta;
 		do {
@@ -650,6 +655,7 @@ public class ConsolaProfesoresCreadores {
 			System.out.println("Usted no es el creador de este learning path");
 		}
 	}
+	
 	private void menuEdicionLearningPath(int idLp) {
 		int respuesta;
 		do {
@@ -698,7 +704,6 @@ public class ConsolaProfesoresCreadores {
 		LPC.editarFechaModificacion(idLp);
 	}
 
-	//Consultar componentes Learning Paths
 	private void verActividades() {
 		Collection<Actividad> actividades = AC.getActividades();
 		System.out.println("\nEstas son las actividades disponibles (El numero a su lado corresponde a su id).");
@@ -742,7 +747,6 @@ public class ConsolaProfesoresCreadores {
 		}
 	}
 	
-	//Crear actividades por tipo
 	private void crearActividadExamen(int idA) {
 		String pregunta;
 		List<String> preguntas = new ArrayList<>();
@@ -883,5 +887,18 @@ public class ConsolaProfesoresCreadores {
 		String url = input.nextLine();
 		AC.editarURL(idA, url);
 	}
-
+	
+	private void revisarProgreso() {
+		String login;
+		if (rolActual.equals("Estudiante")) {
+			login = loginActual;
+		} else {
+			System.out.println("Ingrese el login del estudiante que quiere revisar: ");
+			login = input.nextLine();
+		}
+		System.out.println("Ingrese el id del learning path que quiere revisar");
+		int idLP = input.nextInt();
+		input.nextLine();
+		RGC.mostrarProgreso(idLP, login);
+	}
 }
