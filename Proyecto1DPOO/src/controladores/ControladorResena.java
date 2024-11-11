@@ -28,18 +28,6 @@ public class ControladorResena {
 		return listaResenas;
 	}
 	
-	public void revisarResenas(int idActividad) {
-		ArrayList<Resena> listaResenas = resenasActividad(idActividad);
-		System.out.println("Las reseñas de la actividad son:");
-		for (Resena resena : listaResenas) {
-			System.out.printf("\n Login del autor: %s.", resena.getLoginAutor());
-			System.out.printf("\n Rol del autor: %s.", resena.getRolAutor());
-			System.out.printf("\n Opinion: %s.", resena.getOpinion());
-			System.out.printf("\n Rating: %s. \n", resena.getRating());
-		}
-		System.out.printf("La actividad tiene un rating promedio de: %f.", calcularRating(idActividad) );
-	}
-	
 	public float calcularRating(int idActividad) {
 		ArrayList<Resena> listaResenas = resenasActividad(idActividad);
 		float sumaRatings = 0;

@@ -1,5 +1,6 @@
 package componentes;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Actividad {
@@ -8,37 +9,22 @@ public class Actividad {
 	private int id;
 	private String tipo;
 	private String descripcion;
-	private String[] objetivos;
+	private List<String> objetivos;
 	private String nivelDificultad;
 	private int duracion;
 	private List<Actividad> actividadesPrevias;
-	private String fechaLimite;
 	private List<Actividad> actividadesSeguimiento;
+	private LocalDateTime fechaLimite;
 	private String url;
 	private List<PreguntaMultiple> preguntasMultiples;
+	private List<PreguntaVerdaderoFalso> preguntasVerdaderoFalso;
 	private List<PreguntaAbierta> preguntasAbiertas;
 	private float notaMinima;
 	
 	//Constructor
-	public Actividad(String loginCreador, int id, String tipo, String descripcion, String[] objetivos,
-			String nivelDificultad, int duracion, List<Actividad> actividadesPrevias, String fechaLimite,
-			List<Actividad> actividadesSeguimiento, String url, List<PreguntaMultiple> preguntasMultiples,
-			List<PreguntaAbierta> preguntasAbiertas, float notaMinima) {
-		super();
-		this.loginCreador = loginCreador;
+	public Actividad(int id, String loginCreador) {
 		this.id = id;
-		this.tipo = tipo;
-		this.descripcion = descripcion;
-		this.objetivos = objetivos;
-		this.nivelDificultad = nivelDificultad;
-		this.duracion = duracion;
-		this.actividadesPrevias = actividadesPrevias;
-		this.fechaLimite = fechaLimite;
-		this.actividadesSeguimiento = actividadesSeguimiento;
-		this.url = url;
-		this.preguntasMultiples = preguntasMultiples;
-		this.preguntasAbiertas = preguntasAbiertas;
-		this.notaMinima = notaMinima;
+		this.loginCreador = loginCreador;
 	}
 	
 	//Getters y Setters
@@ -74,11 +60,11 @@ public class Actividad {
 		this.descripcion = descripcion;
 	}
 
-	public String[] getObjetivos() {
+	public List<String> getObjetivos() {
 		return objetivos;
 	}
 
-	public void setObjetivos(String[] objetivos) {
+	public void setObjetivos(List<String> objetivos) {
 		this.objetivos = objetivos;
 	}
 
@@ -106,11 +92,11 @@ public class Actividad {
 		this.actividadesPrevias = actividadesPrevias;
 	}
 
-	public String getFechaLimite() {
+	public LocalDateTime getFechaLimite() {
 		return fechaLimite;
 	}
 
-	public void setFechaLimite(String fechaLimite) {
+	public void setFechaLimite(LocalDateTime fechaLimite) {
 		this.fechaLimite = fechaLimite;
 	}
 
@@ -152,5 +138,13 @@ public class Actividad {
 	
 	public void setNotaMinima(float notaMinima) {
 		this.notaMinima = notaMinima;
+	}
+
+	public List<PreguntaVerdaderoFalso> getPreguntasVerdaderoFalso() {
+		return preguntasVerdaderoFalso;
+	}
+
+	public void setPreguntasVerdaderoFalso(List<PreguntaVerdaderoFalso> preguntasVerdaderoFalso) {
+		this.preguntasVerdaderoFalso = preguntasVerdaderoFalso;
 	}
 }

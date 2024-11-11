@@ -1,15 +1,19 @@
 package controladores;
 
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.Arrays;
+import java.util.Collection;
 
 import componentes.Actividad;
 import componentes.Opcion;
 import componentes.PreguntaAbierta;
 import componentes.PreguntaMultiple;
+import componentes.PreguntaVerdaderoFalso;
 
 public class ControladorActividad {
 	
@@ -17,31 +21,6 @@ public class ControladorActividad {
 	
 	public ControladorActividad() {
 	    this.actividades = new HashMap<>();
-	}
-	
-	public void imprimirActividades() {
-		Set<Integer> ids = actividades.keySet();
-		System.out.println("\nEstas son las actividades disponibles (El numero a su lado corresponde a su id).");
-		for (int id : ids) {
-			System.out.printf("%d.", id);
-			System.out.printf("\n Descripcion: %s.", actividades.get(id).getDescripcion());
-			System.out.printf("\n Creador: %s.", actividades.get(id).getLoginCreador());
-			System.out.printf("\n Tipo: %s.", actividades.get(id).getTipo());
-			System.out.printf("\n Nivel de dificultad: %s.", actividades.get(id).getNivelDificultad());
-			System.out.printf("\n Duracion en minutos: %s.\n", actividades.get(id).getDuracion());
-		}
-	}
-	
-	public void imprimirActividades(ArrayList<Integer> ids) {
-		System.out.println("\nEstas son las actividades disponibles en el learning path (El numero a su lado corresponde a su id).");
-		for (int id : ids) {
-			System.out.printf("%d.", id);
-			System.out.printf("\n Descripcion: %s.", actividades.get(id).getDescripcion());
-			System.out.printf("\n Creador: %s.", actividades.get(id).getLoginCreador());
-			System.out.printf("\n Tipo: %s.", actividades.get(id).getTipo());
-			System.out.printf("\n Nivel de dificultad: %s.", actividades.get(id).getNivelDificultad());
-			System.out.printf("\n Duracion en minutos: %s.\n", actividades.get(id).getDuracion());
-		}
 	}
 	
 	public Actividad getActividad(int id) {
@@ -56,14 +35,7 @@ public class ControladorActividad {
 		return a.getPreguntasMultiples();
 	}
 	
-	public boolean verificarCreador(int id, String loginActual) {
-		if (actividades.get(id).getLoginCreador().equals(loginActual)) {
-			return true;
-		}
-		return false;
-	}
-	
-	public List<Actividad> getActividades(List<Integer> ids) {
+	public List<Actividad> getActividadesIds(List<Integer> ids) {
 		ArrayList<Actividad> actividadesLista = new ArrayList<>();
 		for (int id : ids) {
 			actividadesLista.add(getActividad(id));
@@ -71,20 +43,94 @@ public class ControladorActividad {
 		return actividadesLista;
 	}
 	
-	//Creacion Actividades
-	public void crearActividadExamen(String loginCreador, String tipo, String descripcion, String stringObjetivos,
-			String nivelDificultad, int duracion, List<Integer> idActividadesPrevias, String fechaLimite,
-			List<Integer> idActividadesSeguimiento, List<String> preguntas, float notaMinima) {
-		int id = actividades.size() + 1;
-		String[] objetivos = stringObjetivos.split(",");
-		List<Actividad> actividadesPrevias = getActividades(idActividadesPrevias);
-		List<Actividad> actividadesSeguimiento = getActividades(idActividadesSeguimiento);
-		List<PreguntaAbierta> preguntasAbiertas = crearPreguntas(preguntas);
-		Actividad actividad = new Actividad(loginCreador, id, tipo, descripcion, objetivos, nivelDificultad, duracion, 
-				actividadesPrevias, fechaLimite, actividadesSeguimiento, null, null, preguntasAbiertas, notaMinima);
-		actividades.put(id, actividad);
+	public Collection<Actividad> getActividades() {
+		Collection<Actividad> as = actividades.values();
+		return as;
 	}
-	private List<PreguntaAbierta> crearPreguntas(List<String> preguntas) {
+	
+	//Creacion Actividades
+	public int crearActividad(String loginActual) {
+		int id = actividades.size() + 1;
+		Actividad a = new Actividad(id, loginActual);
+		actividades.put(id, a);
+		return id;
+	}
+	
+	//Edicion Actividades
+	public void editarTipo(int id, String tipo) {
+		Actividad a = actividades.get(id);
+		a.setTipo(tipo);
+	}
+	
+	public void editarDescripcion(int id, String descripcion) {
+		Actividad a = actividades.get(id);
+		a.setDescripcion(descripcion);
+	}
+	
+	public void editarObjetivos(int id, String stringObjetivos) {
+		Actividad a = actividades.get(id);
+		List<String> objetivos = Arrays.asList(stringObjetivos.split(","));
+		a.setObjetivos(objetivos);
+	}
+	
+	public void editarNivelDificultad(int id, String nivelDificultad) {
+		Actividad a = actividades.get(id);
+		a.setNivelDificultad(nivelDificultad);
+	}
+	
+	public void editarDuracion(int id, int duracion) {
+		Actividad a = actividades.get(id);
+		a.setDuracion(duracion);
+	}
+	
+	public void editarActividadesPrevias(int id, List<Integer> idActividades) {
+		Actividad a = actividades.get(id);
+		List<Actividad> actividadesPrevias = getActividadesIds(idActividades);
+		a.setActividadesPrevias(actividadesPrevias);
+	}
+	
+	public void editarActividadesSeguimiento(int id, List<Integer> idActividades) {
+		Actividad a = actividades.get(id);
+		List<Actividad> actividadesSeguimiento = getActividadesIds(idActividades);
+		a.setActividadesSeguimiento(actividadesSeguimiento);
+	}
+	
+	public void editarFechaLimite(int id, String stringFecha) {
+		Actividad a = actividades.get(id);
+		LocalDateTime fecha = LocalDateTime.parse(stringFecha);
+		a.setFechaLimite(fecha);
+	}
+	
+	public void editarURL(int id, String url) {
+		Actividad a = actividades.get(id);
+		a.setUrl(url);
+	}
+	
+	public void editarPreguntasMultiples(int id, HashMap<String, HashMap<String, String>> preguntas, List<Integer> correctas) {
+		Actividad a = actividades.get(id);
+		List<PreguntaMultiple> preguntasMultiples = crearPreguntasMultiples(preguntas, correctas);
+		a.setPreguntasMultiples(preguntasMultiples);
+	}
+	
+	public void editarPreguntasVerdaderoFalso(int id, HashMap<String, HashMap<String, String>> preguntas, List<Integer> correctas) {
+		Actividad a = actividades.get(id);
+		List<PreguntaVerdaderoFalso> preguntasVerdaderoFalso = crearPreguntasVerdaderoFalso(preguntas, correctas);
+		a.setPreguntasVerdaderoFalso(preguntasVerdaderoFalso);
+	}
+	
+	public void editarPreguntasAbiertas(int id, List<String> preguntas) {
+		Actividad a = actividades.get(id);
+		List<PreguntaAbierta> preguntasAbiertas = crearPreguntasAbiertas(preguntas);
+		a.setPreguntasAbiertas(preguntasAbiertas);
+	}
+	
+	public void editarNotaMinima(int id, int nota) {
+		Actividad a = actividades.get(id);
+		a.setNotaMinima(nota);
+	}
+	
+	//Creacion Preguntas
+	private List<PreguntaAbierta> crearPreguntasAbiertas(List<String> preguntas) {
 		ArrayList<PreguntaAbierta> preguntasAbiertas = new ArrayList<>();
 		for (String pregunta : preguntas) {
 			PreguntaAbierta preguntaAbierta = new PreguntaAbierta(pregunta);
@@ -93,19 +139,6 @@ public class ControladorActividad {
 		return preguntasAbiertas;
 	}
 
-	public void crearActividadQuiz(String loginCreador, String tipo, String descripcion, String stringObjetivos,
-			String nivelDificultad, int duracion, List<Integer> idActividadesPrevias, String fechaLimite,
-			List<Integer> idActividadesSeguimiento, HashMap<String, HashMap<String, String>> preguntas, 
-			List<Integer> correctas, float notaMinima) {
-		int id = actividades.size() + 1;
-		String[] objetivos = stringObjetivos.split(",");
-		List<Actividad> actividadesPrevias = getActividades(idActividadesPrevias);
-		List<Actividad> actividadesSeguimiento = getActividades(idActividadesSeguimiento);
-		List<PreguntaMultiple> preguntasMultiples = crearPreguntasMultiples(preguntas, correctas);
-		Actividad actividad = new Actividad(loginCreador, id, tipo, descripcion, objetivos, nivelDificultad, duracion,
-				actividadesPrevias, fechaLimite, actividadesSeguimiento, null, preguntasMultiples, null, notaMinima);
-		actividades.put(id, actividad);
-	}
 	private List<PreguntaMultiple> crearPreguntasMultiples(HashMap<String, HashMap<String, String>> preguntas, List<Integer> correctas) {
 		ArrayList<PreguntaMultiple> preguntasMultiples = new ArrayList<>();
 		Set<String> stringPreguntas = preguntas.keySet();
@@ -126,108 +159,26 @@ public class ControladorActividad {
 		}
 		return preguntasMultiples;
 	}
-
-	public void crearActividadEncuesta(String loginCreador, String tipo, String descripcion, String stringObjetivos,
-			String nivelDificultad, int duracion, List<Integer> idActividadesPrevias, String fechaLimite,
-			List<Integer> idActividadesSeguimiento, List<String> preguntas) {
-		int id = actividades.size() + 1;
-		String[] objetivos = stringObjetivos.split(",");
-		List<Actividad> actividadesPrevias = getActividades(idActividadesPrevias);
-		List<Actividad> actividadesSeguimiento = getActividades(idActividadesSeguimiento);
-		List<PreguntaAbierta> preguntasAbiertas = crearPreguntas(preguntas);
-		Actividad actividad = new Actividad(loginCreador, id, tipo, descripcion, objetivos, nivelDificultad, duracion, 
-				actividadesPrevias, fechaLimite, actividadesSeguimiento, null, null, preguntasAbiertas, 0);
-		actividades.put(id, actividad);
+	
+	private List<PreguntaVerdaderoFalso> crearPreguntasVerdaderoFalso(HashMap<String, HashMap<String, String>> preguntas, List<Integer> correctas) {
+		ArrayList<PreguntaVerdaderoFalso> preguntasVerdaderoFalso = new ArrayList<>();
+		Set<String> stringPreguntas = preguntas.keySet();
+		for (String pregunta : stringPreguntas) {
+			Set<String> stringOpciones = preguntas.get(pregunta).keySet();
+			ArrayList<Opcion> opciones = new ArrayList<>();
+			for (String opcion : stringOpciones) {
+				Opcion opc;
+				if (correctas.get(preguntasVerdaderoFalso.size()) == opciones.size() + 1) {
+					opc = new Opcion(opcion, preguntas.get(pregunta).get(opcion), true);
+				} else {
+					opc = new Opcion(opcion, preguntas.get(pregunta).get(opcion), false);
+				}
+				opciones.add(opc);
+			}
+			PreguntaVerdaderoFalso preguntaVerdaderoFalso = new PreguntaVerdaderoFalso(pregunta, opciones);
+			preguntasVerdaderoFalso.add(preguntaVerdaderoFalso);
+		}
+		return preguntasVerdaderoFalso;
 	}
 	
-	public void crearActividadRecurso(String loginCreador, String tipo, String descripcion, String stringObjetivos,
-			String nivelDificultad, int duracion, List<Integer> idActividadesPrevias, String fechaLimite,
-			List<Integer> idActividadesSeguimiento, String url) {
-		
-		int id = actividades.size() + 1;
-		String[] objetivos = stringObjetivos.split(",");
-		List<Actividad> actividadesPrevias = getActividades(idActividadesPrevias);
-		List<Actividad> actividadesSeguimiento = getActividades(idActividadesSeguimiento);
-		Actividad actividad = new Actividad(loginCreador, id, tipo, descripcion, objetivos, nivelDificultad, duracion, 
-				actividadesPrevias, fechaLimite, actividadesSeguimiento, url, null, null, 0);
-		actividades.put(id, actividad);
-	}
-	
-	public void crearActividadTarea(String loginCreador, String tipo, String descripcion, String stringObjetivos,
-			String nivelDificultad, int duracion, List<Integer> idActividadesPrevias, String fechaLimite,
-			List<Integer> idActividadesSeguimiento) {
-		int id = actividades.size() + 1;
-		String[] objetivos = stringObjetivos.split(",");
-		List<Actividad> actividadesPrevias = getActividades(idActividadesPrevias);
-		List<Actividad> actividadesSeguimiento = getActividades(idActividadesSeguimiento);
-		Actividad actividad = new Actividad(loginCreador, id, tipo, descripcion, objetivos, nivelDificultad, duracion, 
-				actividadesPrevias, fechaLimite, actividadesSeguimiento, null, null, null, 0);
-		actividades.put(id, actividad);
-	}
-	
-	//Edicion Actividades
-	public void crearActividadExamen(String loginCreador, String tipo, String descripcion, String stringObjetivos,
-			String nivelDificultad, int duracion, List<Integer> idActividadesPrevias, String fechaLimite,
-			List<Integer> idActividadesSeguimiento, List<String> preguntas, float notaMinima, int idActividad) {
-		int id = idActividad;
-		String[] objetivos = stringObjetivos.split(",");
-		List<Actividad> actividadesPrevias = getActividades(idActividadesPrevias);
-		List<Actividad> actividadesSeguimiento = getActividades(idActividadesSeguimiento);
-		List<PreguntaAbierta> preguntasAbiertas = crearPreguntas(preguntas);
-		Actividad actividad = new Actividad(loginCreador, id, tipo, descripcion, objetivos, nivelDificultad, duracion, 
-				actividadesPrevias, fechaLimite, actividadesSeguimiento, null, null, preguntasAbiertas, notaMinima);
-		actividades.put(id, actividad);
-	}
-
-	public void crearActividadQuiz(String loginCreador, String tipo, String descripcion, String stringObjetivos,
-			String nivelDificultad, int duracion, List<Integer> idActividadesPrevias, String fechaLimite,
-			List<Integer> idActividadesSeguimiento, HashMap<String, HashMap<String, String>> preguntas,
-			List<Integer> correctas, float notaMinima, int idActividad) {
-		int id = idActividad;
-		String[] objetivos = stringObjetivos.split(",");
-		List<Actividad> actividadesPrevias = getActividades(idActividadesPrevias);
-		List<Actividad> actividadesSeguimiento = getActividades(idActividadesSeguimiento);
-		List<PreguntaMultiple> preguntasMultiples = crearPreguntasMultiples(preguntas, correctas);
-		Actividad actividad = new Actividad(loginCreador, id, tipo, descripcion, objetivos, nivelDificultad, duracion,
-				actividadesPrevias, fechaLimite, actividadesSeguimiento, null, preguntasMultiples, null, notaMinima);
-		actividades.put(id, actividad);
-	}
-
-	public void crearActividadEncuesta(String loginCreador, String tipo, String descripcion, String stringObjetivos,
-			String nivelDificultad, int duracion, List<Integer> idActividadesPrevias, String fechaLimite,
-			List<Integer> idActividadesSeguimiento, List<String> preguntas, int idActividad) {
-		int id = idActividad;
-		String[] objetivos = stringObjetivos.split(",");
-		List<Actividad> actividadesPrevias = getActividades(idActividadesPrevias);
-		List<Actividad> actividadesSeguimiento = getActividades(idActividadesSeguimiento);
-		List<PreguntaAbierta> preguntasAbiertas = crearPreguntas(preguntas);
-		Actividad actividad = new Actividad(loginCreador, id, tipo, descripcion, objetivos, nivelDificultad, duracion, 
-				actividadesPrevias, fechaLimite, actividadesSeguimiento, null, null, preguntasAbiertas, 0);
-		actividades.put(id, actividad);
-	}
-	
-	public void crearActividadRecurso(String loginCreador, String tipo, String descripcion, String stringObjetivos,
-			String nivelDificultad, int duracion, List<Integer> idActividadesPrevias, String fechaLimite,
-			List<Integer> idActividadesSeguimiento, String url, int idActividad) {
-		
-		int id = idActividad;
-		String[] objetivos = stringObjetivos.split(",");
-		List<Actividad> actividadesPrevias = getActividades(idActividadesPrevias);
-		List<Actividad> actividadesSeguimiento = getActividades(idActividadesSeguimiento);
-		Actividad actividad = new Actividad(loginCreador, id, tipo, descripcion, objetivos, nivelDificultad, duracion, 
-				actividadesPrevias, fechaLimite, actividadesSeguimiento, url, null, null, 0);
-		actividades.put(id, actividad);
-	}
-	
-	public void crearActividadTarea(String loginCreador, String tipo, String descripcion, String stringObjetivos,
-			String nivelDificultad, int duracion, List<Integer> idActividadesPrevias, String fechaLimite,
-			List<Integer> idActividadesSeguimiento, int idActividad) {
-		int id = idActividad;
-		String[] objetivos = stringObjetivos.split(",");
-		List<Actividad> actividadesPrevias = getActividades(idActividadesPrevias);
-		List<Actividad> actividadesSeguimiento = getActividades(idActividadesSeguimiento);
-		Actividad actividad = new Actividad(loginCreador, id, tipo, descripcion, objetivos, nivelDificultad, duracion, 
-				actividadesPrevias, fechaLimite, actividadesSeguimiento, null, null, null, 0);
-		actividades.put(id, actividad);
-	}
 }

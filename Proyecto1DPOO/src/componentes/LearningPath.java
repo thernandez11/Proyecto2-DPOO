@@ -14,22 +14,18 @@ public class LearningPath {
 	private int version;
 	private HashMap<Actividad, Boolean> actividades;
 	private String loginCreador;
+	private int id;
 	
 	//Constructor
-	public LearningPath(String titulo, String descripcionGeneral, String nivelDificultad, int duracion,
-			LocalDateTime fechaCreacion, LocalDateTime fechaModificacion, int version, HashMap<Actividad, Boolean> actividades, String loginCreador) {
-		super();
-		this.titulo = titulo;
-		this.descripcionGeneral = descripcionGeneral;
-		this.nivelDificultad = nivelDificultad;
-		this.duracion = duracion;
+	public LearningPath(int id, String login, int version, LocalDateTime fechaCreacion, LocalDateTime fechaModificacion) {
+		this.id = id;
+		this.loginCreador = login;
+		this.version = version;
 		this.fechaCreacion = fechaCreacion;
 		this.fechaModificacion = fechaModificacion;
-		this.version = version;
-		this.actividades = actividades;
-		this.loginCreador = loginCreador;
 	}
 
+	//Getters y Setters
 	public String getTitulo() {
 		return titulo;
 	}
@@ -100,5 +96,13 @@ public class LearningPath {
 
 	public void setLoginCreador(String loginCreador) {
 		this.loginCreador = loginCreador;
-	}	
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 }
