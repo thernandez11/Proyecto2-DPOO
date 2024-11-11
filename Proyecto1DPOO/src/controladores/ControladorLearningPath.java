@@ -18,70 +18,26 @@ public class ControladorLearningPath {
 	    this.learningPaths = new HashMap<>();
 	}
 	
+	//Consultar informacion learningPaths
 	public LearningPath getLearningPath(int idLp) {
 		LearningPath lp = learningPaths.get(idLp);
 		return lp;
 	}
-	
 	public Collection<LearningPath> getLearningPaths() {
 		Collection<LearningPath> lps = learningPaths.values();
 		return lps;
 	}
-	
-	public int crearLearningPath(String loginActual) {
-		LocalDateTime fecha = LocalDateTime.now();
-		int id = learningPaths.size() + 1;
-		LearningPath lp = new LearningPath(id, loginActual, 0, fecha, fecha);
-		learningPaths.put(id, lp);
-		return id;
+	public Collection<LearningPath> getLearningPathsPropios(String loginActual) {
+		ArrayList<LearningPath> propios = new ArrayList<>();
+		Collection<LearningPath> lps = learningPaths.values();
+		for (LearningPath lp : lps) {
+			if (lp.getLoginCreador().equals(loginActual)) {
+				propios.add(lp);
+			}
+		}
+		return propios;
 	}
-	
-	public int crearLearningPathEditado(int idLp, String loginActual) {
-		LearningPath lpOriginal = learningPaths.get(idLp);
-		LocalDateTime fecha = LocalDateTime.now();
-		int id = learningPaths.size() + 1;
-		LearningPath lp = new LearningPath(id, loginActual, (lpOriginal.getVersion() + 1), lpOriginal.getFechaCreacion(), fecha);
-		learningPaths.put(id, lp);
-		return id;
-	}
-	
-	public void editarTitulo(int id, String titulo) {
-		LearningPath lp = learningPaths.get(id);
-		lp.setTitulo(titulo);
-	}
-	
-	public void editarDescripcionGeneral(int id, String descripcion) {
-		LearningPath lp = learningPaths.get(id);
-		lp.setDescripcionGeneral(descripcion);
-	}
-	
-	public void editarNivelDificultad(int id, String nivelDificultad) {
-		LearningPath lp = learningPaths.get(id);
-		lp.setNivelDificultad(nivelDificultad);
-	}
-	
-	public void editarDuracion(int id, int duracion) {
-		LearningPath lp = learningPaths.get(id);
-		lp.setDuracion(duracion);
-	}
-	
-	public void editarActividades(int id, HashMap<Actividad, Boolean> actividades) {
-		LearningPath lp = learningPaths.get(id);
-		lp.setActividades(actividades);
-	}
-	
-	public void editarVersion(int id) {
-		LearningPath lp = learningPaths.get(id);
-		lp.setVersion(lp.getVersion() + 1);
-	}
-	
-	public void editarFechaModificacion(int id) {
-		LearningPath lp = learningPaths.get(id);
-		LocalDateTime fecha = LocalDateTime.now();
-		lp.setFechaModificacion(fecha);
-	}
-		
-	public ArrayList<Integer> getActividadesLP(int idLP) {
+	public ArrayList<Integer> getIdsActividadesLP(int idLP) {
 		ArrayList<Integer> ids = new ArrayList<>();
 		LearningPath lp = learningPaths.get(idLP);
 		Set<Actividad> actividades = lp.getActividades().keySet();
@@ -91,6 +47,47 @@ public class ControladorLearningPath {
 		return ids;
 	}
 	
+	//Crear learning path
+	public int crearLearningPath(String loginActual) {
+		LocalDateTime fecha = LocalDateTime.now();
+		int id = learningPaths.size() + 1;
+		LearningPath lp = new LearningPath(id, loginActual, 0, fecha, fecha);
+		learningPaths.put(id, lp);
+		return id;
+	}
+	
+	//Editar atributos learning path
+	public void editarTitulo(int id, String titulo) {
+		LearningPath lp = learningPaths.get(id);
+		lp.setTitulo(titulo);
+	}
+	public void editarDescripcionGeneral(int id, String descripcion) {
+		LearningPath lp = learningPaths.get(id);
+		lp.setDescripcionGeneral(descripcion);
+	}
+	public void editarNivelDificultad(int id, String nivelDificultad) {
+		LearningPath lp = learningPaths.get(id);
+		lp.setNivelDificultad(nivelDificultad);
+	}
+	public void editarDuracion(int id, int duracion) {
+		LearningPath lp = learningPaths.get(id);
+		lp.setDuracion(duracion);
+	}
+	public void editarActividades(int id, HashMap<Actividad, Boolean> actividades) {
+		LearningPath lp = learningPaths.get(id);
+		lp.setActividades(actividades);
+	}
+	public void editarVersion(int id) {
+		LearningPath lp = learningPaths.get(id);
+		lp.setVersion(lp.getVersion() + 1);
+	}
+	public void editarFechaModificacion(int id) {
+		LearningPath lp = learningPaths.get(id);
+		LocalDateTime fecha = LocalDateTime.now();
+		lp.setFechaModificacion(fecha);
+	}
+		
+	//Persistencia learning paths
 	public void guardarLPEnArchivo(String nombreArchivo) throws IOException {
         String directorioRelativo = "Persistencia"; 
         File directorio = new File(directorioRelativo);

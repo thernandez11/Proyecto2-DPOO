@@ -4,9 +4,12 @@ import componentes.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class ConsolaEstudiantes {
 	private ControladorActividad AC;
@@ -29,13 +32,13 @@ public class ConsolaEstudiantes {
         this.input = new Scanner(System.in);
     }
 	
+	//Main y consola principal estudiantes
 	public static void main(String[] args) throws IOException {
 		
 		ConsolaEstudiantes c = new ConsolaEstudiantes();
 		c.consolaRegistro();
 		c.input.close();
 	}
-	
 	private void consolaRegistro() throws IOException {
 		int respuesta;
 		cargarDatos();
@@ -100,7 +103,7 @@ public class ConsolaEstudiantes {
 		salvarDatos();
 	}
 	
-
+	//Salvar y cargar datos
 	private void salvarDatos() throws IOException {
 		EC.guardarEstudiantesEnArchivo("estudiantes.txt");
 		PC.guardarProfesoresEnArchivo("profesores.txt");
@@ -114,6 +117,7 @@ public class ConsolaEstudiantes {
 		RC.cargarResenasDesdeArchivo("resenas.txt");
 	}
 
+	//Registrar y ingresar estudiantes
 	private void registrarEstudiante() {
 		
 		System.out.println("Ingrese su login:");
@@ -129,7 +133,6 @@ public class ConsolaEstudiantes {
 		}
 
 	}
-
 	private void ingresarEstudiante() {
 		
 		System.out.println("Ingrese su login:");
@@ -150,6 +153,7 @@ public class ConsolaEstudiantes {
 		}
 	}
 
+	//Crear reseñas de actividades
 	private void crearResena() {
 		System.out.println("Ingrese el id de la actividad que quiere reseñar");
 		int id = input.nextInt();
@@ -166,7 +170,7 @@ public class ConsolaEstudiantes {
 		System.out.println("Reseña creada de manera exitosa!");
 	}
 	
-	
+	//Consultar componentes Learning Paths
 	private void verActividades() {
 		Collection<Actividad> actividades = AC.getActividades();
 		System.out.println("\nEstas son las actividades disponibles (El numero a su lado corresponde a su id).");
@@ -222,37 +226,179 @@ public class ConsolaEstudiantes {
 		}
 	}
 	
+	//Inscribir Learning Paths
 	private void inscribirLearningPath() {
 		System.out.println("Inserte la id del learning path que quiere inscribir.");
 		int idLP = input.nextInt();
 		input.nextLine();
-		RGC.inscribirEstudiante(idLP, loginActual, AC, LPC);
+		LearningPath lp = LPC.getLearningPath(idLP);
+		RGC.crearRegistroLpEstudiante(loginActual, lp);
+		RGC.crearRegistrosActividad(loginActual, lp);
 		System.out.println("Se ha inscrito exitosamente!");
 	}
 	
+	//Consultar y desarrollar actividades de learning path
 	private void desarrollarActividad() {
-		if (!(rolActual.equals("Estudiante"))) {
-			System.out.println("\nUsted es un profesor, no tiene porque realizar actividades");
-		} else {
-			System.out.println("Ingrese la id del learning path al cual pertenece la actividad");
-			int idLP = input.nextInt();
-			input.nextLine();
-			verActividadesLp(LPC.getActividadesLP(idLP));
-			System.out.println("Digite el id de la actividad que quiere realizar");
-			int idA = input.nextInt();
-			input.nextLine();
-			String tipo = AC.getActividad(idA).getTipo();
-			RGC.desarrollarActividad(idLP, idA, tipo, loginActual, input, AC);
+		System.out.println("Ingrese la id del learning path al cual pertenece la actividad");
+		int idLP = input.nextInt();
+		input.nextLine();
+		
+		verActividadesLp(LPC.getIdsActividadesLP(idLP));
+		System.out.println("Digite el id de la actividad que quiere realizar");
+		int idA = input.nextInt();
+		input.nextLine();
+		
+		Actividad a = AC.getActividad(idA);
+		RegistroActividad ra = RGC.getRegistroActividad(loginActual, idLP, idA);
+		
+		switch (a.getTipo()) {
+			case "Tarea":
+				desarrollarActividadTarea(a, ra);
+				break;
+			case "RecursoEducativo":
+				desarrollarActividadRecursoEducativo(a, ra);
+				break;
+			case "Encuesta":
+				desarrollarActividadEncuesta(a, ra);
+				break;
+			case "Examen":
+				desarrollarActividadExamen(a, ra);
+				break;
+			case "QuizMultiple":
+				desarrollarActividadQuizMultiple(a, ra);
+				break;
+			case "QuizVerdaderoFalso":
+				desarrollarActividadQuizVerdaderoFalso(a, ra);
+				break;
 		}
+		System.out.println("Actividad desarrollada exitosamente");
 	}
-	private void revisarProgreso() {
-		String login;
-		if (rolActual.equals("Estudiante")) {
-			login = loginActual;
-		} else {
-			System.out.println("Ingrese el login del estudiante que quiere revisar: ");
-			login = input.nextLine();
+	public void desarrollarActividadTarea(Actividad a, RegistroActividad ra) {
+		String respuesta;
+		ra.setFechaInicio(LocalDateTime.now());
+		System.out.println("Lea la descripcion de la tarea, cuando ya la haya enviado al profesor, ingrese Y");
+		do {
+			respuesta = input.nextLine();
+		} while (respuesta.equals("Y"));
+		ra.setEstado("Enviada");
+	}
+	public void desarrollarActividadRecursoEducativo(Actividad a, RegistroActividad ra) {
+		String respuesta;
+		ra.setFechaInicio(LocalDateTime.now());
+		System.out.println("Ingrese al url, cuando ya lo haya consultado, ingrese Y");
+		System.out.printf("URL: %s. \n", a.getUrl());
+		do {
+			respuesta = input.nextLine();
+		} while (!(respuesta.equals("Y")));
+		ra.setEstado("Completada");
+		ra.setFechaTerminado(LocalDateTime.now());
+	}
+	public void desarrollarActividadEncuesta(Actividad a, RegistroActividad ra) {
+		String respuesta;
+		ra.setFechaInicio(LocalDateTime.now());
+		HashMap<String, String> respuestas = ra.getRespuestas();
+		Set<String> preguntas = respuestas.keySet();
+		for (String pregunta : preguntas) {
+			System.out.println(pregunta);
+			System.out.println("Ingrese su respuesta: ");
+			respuesta = input.nextLine();
+			respuestas.put(pregunta, respuesta);
 		}
+		ra.setEstado("Completada");
+		ra.setFechaTerminado(LocalDateTime.now());
+	}
+	public void desarrollarActividadExamen(Actividad a, RegistroActividad ra) {
+		String respuesta;
+		ra.setFechaInicio(LocalDateTime.now());
+		HashMap<String, String> respuestas = ra.getRespuestas();
+		Set<String> preguntas = respuestas.keySet();
+		for (String pregunta : preguntas) {
+			System.out.println(pregunta);
+			System.out.println("Ingrese su respuesta: ");
+			respuesta = input.nextLine();
+			respuestas.put(pregunta, respuesta);
+		}
+		ra.setEstado("Enviada");
+		ra.setFechaTerminado(LocalDateTime.now());
+	}
+	public void desarrollarActividadQuizMultiple(Actividad a, RegistroActividad ra) {
+		String respuesta;
+		ra.setFechaInicio(LocalDateTime.now());
+		String textoA = null, textoB = null, textoC = null, textoD = null;
+		HashMap<String, String> respuestas = ra.getRespuestas();
+		List<PreguntaMultiple> opciones = a.getPreguntasMultiples();
+		for (PreguntaMultiple pregunta : opciones) {
+			System.out.println(pregunta.getTextoPregunta());
+			List<Opcion> variantes = pregunta.getOpciones();
+			textoA = variantes.get(0).getTextoOpcion();
+			System.out.printf("A. %s\n", textoA);
+			
+			textoB = variantes.get(1).getTextoOpcion();
+			System.out.printf("B. %s\n", textoB);
+			
+			textoC = variantes.get(2).getTextoOpcion();
+			System.out.printf("C. %s\n", textoC);
+			
+			textoD = variantes.get(3).getTextoOpcion();
+			System.out.printf("D. %s\n", textoD);
+			
+			System.out.println("Ingrese la letra de la opcion que quiere elegir: ");
+			do {
+			respuesta = input.nextLine();
+			} while (!(respuesta.equals("A") || respuesta.equals("B") || respuesta.equals("C") || respuesta.equals("D")));
+			switch (respuesta) {
+				case "A":
+				respuestas.put(pregunta.getTextoPregunta(), textoA);
+					break;
+				case "B":
+					respuestas.put(pregunta.getTextoPregunta(), textoB);
+					break;
+				case "C":
+					respuestas.put(pregunta.getTextoPregunta(), textoC);
+					break;
+				case "D":
+					respuestas.put(pregunta.getTextoPregunta(), textoD);
+					break;
+			}
+		}
+		ra.setEstado("Completada");
+		ra.setFechaTerminado(LocalDateTime.now());
+	}
+	public void desarrollarActividadQuizVerdaderoFalso(Actividad a, RegistroActividad ra) {
+		String respuesta;
+		ra.setFechaInicio(LocalDateTime.now());
+		String textoA = null, textoB = null;
+		HashMap<String, String> respuestas = ra.getRespuestas();
+		List<PreguntaVerdaderoFalso> opciones = a.getPreguntasVerdaderoFalso();
+		for (PreguntaVerdaderoFalso pregunta : opciones) {
+			System.out.println(pregunta.getTextoPregunta());
+			List<Opcion> variantes = pregunta.getOpciones();
+			textoA = variantes.get(0).getTextoOpcion();
+			System.out.printf("V. %s\n", textoA);
+			
+			textoB = variantes.get(1).getTextoOpcion();
+			System.out.printf("F. %s\n", textoB);
+			
+			System.out.println("Ingrese la letra de la opcion que quiere elegir: ");
+			do {
+			respuesta = input.nextLine();
+			} while (!(respuesta.equals("V") || respuesta.equals("F")));
+			switch (respuesta) {
+				case "V":
+				respuestas.put(pregunta.getTextoPregunta(), textoA);
+					break;
+				case "F":
+					respuestas.put(pregunta.getTextoPregunta(), textoB);
+					break;
+			}
+		}
+		ra.setEstado("Completada");
+		ra.setFechaTerminado(LocalDateTime.now());
+	}
+	
+	//Revisar progeso de lp
+	private void revisarProgreso() {
+		String login = loginActual;
 		System.out.println("Ingrese el id del learning path que quiere revisar");
 		int idLP = input.nextInt();
 		input.nextLine();

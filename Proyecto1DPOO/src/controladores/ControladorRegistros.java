@@ -7,42 +7,125 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-
-import componentes.Actividad;
-import componentes.Opcion;
-import componentes.Pregunta;
-import componentes.PreguntaAbierta;
-import componentes.PreguntaMultiple;
-import componentes.RegistroActividad;
-import componentes.RegistroLearningPath;
+import componentes.*;
 
 public class ControladorRegistros {
 
-	HashMap<Integer, ArrayList<RegistroLearningPath>> registrosLP;
+	HashMap<Integer, ArrayList<RegistroLearningPath>> registrosLp;
 	
 	public ControladorRegistros() {
-		this.registrosLP = new HashMap<>();
+		this.registrosLp = new HashMap<>();
 	}
 	
-	public void inscribirEstudiante(int idLP, String loginActual, ControladorActividad AC, ControladorLearningPath LPC) {
+	//Crear registros para estudiantes inscritos
+	public void crearRegistroLpEstudiante(String loginActual, LearningPath lp) {
 		LocalDateTime fecha = LocalDateTime.now();
-		RegistroLearningPath rlp = new RegistroLearningPath(loginActual, fecha, fecha, crearRegistros(idLP, AC, LPC));
-		if (!(registrosLP.containsKey(idLP))) {
-			ArrayList<RegistroLearningPath> registros = new ArrayList<>();
-			registros.add(rlp);
-			registrosLP.put(idLP, registros);
+		RegistroLearningPath rlp = new RegistroLearningPath(loginActual, fecha);
+		int idLp = lp.getId();
+		if (registrosLp.containsKey(idLp)) {
+			ArrayList<RegistroLearningPath> rlps = registrosLp.get(idLp);
+			rlps.add(rlp);
 		} else {
-			ArrayList<RegistroLearningPath> registros = registrosLP.get(idLP);
-			registros.add(rlp);
-			registrosLP.put(idLP, registros);
+			ArrayList<RegistroLearningPath> rlps = new ArrayList<>();
+			rlps.add(rlp);
 		}
+	}
+	public void crearRegistrosActividad(String loginActual, LearningPath lp) {
+		ArrayList<RegistroActividad> registros = new ArrayList<>();
+		HashMap<Actividad, Boolean> actividades = lp.getActividades();
+		Set<Actividad> as = actividades.keySet();
+		for (Actividad a : as) {
+			RegistroActividad ra = new RegistroActividad(a.getId(), actividades.get(a));
+			switch (a.getTipo()) {
+				case "Tarea":
+					//Tarea no tiene nada especial
+					break;
+				case "RecursoEducativo":
+					//Recurso Educativo no tiene nada especial
+					break;
+				case "Encuesta":
+					editarRespuestasAbiertas(ra, a);
+					break;
+				case "Examen":
+					editarRespuestasAbiertas(ra, a);
+					break;
+				case "QuizMultiple":
+					editarRespuestasMultiples(ra, a);
+					break;
+				case "QuizVerdaderoFalso":
+					editarRespuestasVerdaderoFalso(ra, a);
+					break;
+			}
+			registros.add(ra);
+		}
+		RegistroLearningPath rlp = getRegistroLp(loginActual, lp.getId());
+		rlp.setRegistrosA(registros);
+	}
+	
+	public RegistroLearningPath getRegistroLp(String loginActual, int idLp) {
+		ArrayList<RegistroLearningPath> rlps = registrosLp.get(idLp);
+		for(RegistroLearningPath rlp : rlps) {
+			if (rlp.getLoginEstudiante().equals(loginActual)) {
+				return rlp;
+			}
+		}
+		return null;
+	}
+	public RegistroActividad getRegistroActividad(String loginActual, int idLp, int idA) {
+		RegistroLearningPath rlp = getRegistroLp(loginActual, idLp);
+		List<RegistroActividad> ras = rlp.getRegistrosA();
+		for (RegistroActividad ra : ras) {
+			if (ra.getIdActividad() == idA) {
+				return ra;
+			}
+		}
+		return null;
+	}
+	
+	public void editarFechaInicio(RegistroActividad ra) {
+		LocalDateTime fecha = LocalDateTime.now();
+		ra.setFechaInicio(fecha);
+	}
+	public void editarFechaTerminado(RegistroActividad ra) {
+		LocalDateTime fecha = LocalDateTime.now();
+		ra.setFechaTerminado(fecha);
+	}
+	public void editarEstado(RegistroActividad ra, String estado) {
+		ra.setEstado(estado);
+	}
+	public void editarRespuestasAbiertas(RegistroActividad ra, Actividad a) {
+		HashMap<String, String> respuestas = new HashMap<>();
+		List<PreguntaAbierta> preguntas = a.getPreguntasAbiertas();
+		for (PreguntaAbierta pregunta : preguntas) {
+			respuestas.put(pregunta.getTextoPregunta(), null);
+		}
+		ra.setRespuestas(respuestas);
+	}
+	public void editarRespuestasMultiples(RegistroActividad ra, Actividad a) {
+		HashMap<String, String> respuestas = new HashMap<>();
+		List<PreguntaMultiple> preguntas = a.getPreguntasMultiples();
+		for (PreguntaMultiple pregunta : preguntas) {
+			respuestas.put(pregunta.getTextoPregunta(), null);
+		}
+		ra.setRespuestas(respuestas);
+	}
+	public void editarRespuestasVerdaderoFalso(RegistroActividad ra, Actividad a) {
+		HashMap<String, String> respuestas = new HashMap<>();
+		List<PreguntaVerdaderoFalso> preguntas = a.getPreguntasVerdaderoFalso();
+		for (PreguntaVerdaderoFalso pregunta : preguntas) {
+			respuestas.put(pregunta.getTextoPregunta(), null);
+		}
+		ra.setRespuestas(respuestas);
+	}
+	public void editarNota(RegistroActividad ra, int nota) {
+		ra.setNota(nota);
 	}
 	
 	public float tiempoDedicadoPorActividad(int idLP) {
 		float terminados = 0;
 		float tiempo = 0;
 		
-		ArrayList<RegistroLearningPath> registros = registrosLP.get(idLP);
+		ArrayList<RegistroLearningPath> registros = registrosLp.get(idLP);
 		for (RegistroLearningPath rlp : registros) {
 			List<RegistroActividad> registrosA = rlp.getRegistrosA();
 			for (RegistroActividad ra : registrosA) {
@@ -57,9 +140,8 @@ public class ControladorRegistros {
 		}
 		return 0;
 	}
-	
 	public float porcentajeCompletado(int idLP) {
-		ArrayList<RegistroLearningPath> registros = registrosLP.get(idLP);
+		ArrayList<RegistroLearningPath> registros = registrosLp.get(idLP);
 		float completados = 0;
 		for (RegistroLearningPath rlp : registros) {
 			if (revisarEstadoRLP(rlp)) {
@@ -71,7 +153,6 @@ public class ControladorRegistros {
 		}
 		return 0;
 	}
-	
 	public boolean revisarEstadoRLP(RegistroLearningPath rlp) {
 		if (rlp.getEstado().equals("Completada")) {
 			return true;
@@ -79,165 +160,11 @@ public class ControladorRegistros {
 			return false;
 		}
 	}
-	
-	public List<RegistroActividad> crearRegistros(int idLP, ControladorActividad AC, ControladorLearningPath LPC) {
-		HashMap<Actividad, Boolean> mapaActividades = LPC.learningPaths.get(idLP).getActividades();
-		ArrayList<RegistroActividad> registros = new ArrayList<>();
-		Set<Actividad> actividades = mapaActividades.keySet();
-		for (Actividad actividad : actividades) {
-			HashMap<String, String> respuestas = new HashMap<>();
-			RegistroActividad RA;
-			List<PreguntaAbierta> preguntas;
-			List<PreguntaMultiple> preguntasMultiples;
-			switch (actividad.getTipo()) {
-				case "Tarea":
-					RA = new RegistroActividad(actividad.getId(), "No enviado", respuestas, mapaActividades.get(actividad), 0);
-					registros.add(RA);
-					break;
-				case "RecursoEducativo":
-					RA = new RegistroActividad(actividad.getId(), "No enviado", respuestas, mapaActividades.get(actividad), 0);
-					registros.add(RA);
-					break;
-				case "Encuesta":
-					preguntas = AC.getPreguntasAbiertas(actividad);
-					for (Pregunta pregunta : preguntas) {
-						respuestas.put(pregunta.getTextoPregunta(), null);
-					}
-					RA = new RegistroActividad(actividad.getId(), "No enviado", respuestas, mapaActividades.get(actividad), 0);
-					registros.add(RA);
-					break;
-				case "Quiz":
-					preguntasMultiples = AC.getPreguntasMultiples(actividad);
-					for (Pregunta pregunta : preguntasMultiples) {
-						respuestas.put(pregunta.getTextoPregunta(), null);
-					}
-					RA = new RegistroActividad(actividad.getId(), "No enviado", respuestas, mapaActividades.get(actividad), 0);
-					registros.add(RA);
-					break;
-				case "Examen":
-					preguntas = AC.getPreguntasAbiertas(actividad);
-					for (Pregunta pregunta : preguntas) {
-						respuestas.put(pregunta.getTextoPregunta(), null);
-					}
-					RA = new RegistroActividad(actividad.getId(), "No enviado", respuestas, mapaActividades.get(actividad), 0);
-					registros.add(RA);
-					break;
-			}
-		}
-		return registros;
-	}
 
-	public void desarrollarActividad(int idLP, int idA, String tipo, String loginActual, Scanner input, ControladorActividad AC) {
-		List<RegistroActividad> lra = null;
-		RegistroActividad registro = null;
-		ArrayList<RegistroLearningPath> lrlp = registrosLP.get(idLP);
-		for (RegistroLearningPath rlp : lrlp) {
-			if (rlp.getLoginEstudiante().equals(loginActual)) {
-				lra = rlp.getRegistrosA();
-			}
-		}
-		for (RegistroActividad ra : lra) {
-			if (ra.getIdActividad() == idA) {
-				registro = ra;
-			}
-		}
-		Actividad actividad = AC.getActividad(idA);
-		HashMap<String,String> respuestas;
-		Set<String> preguntas;
-		String respuesta;
-		switch (tipo) {
-		case "Tarea":
-			System.out.println("Lea la descripcion de la tarea, cuando ya la haya enviado al profesor, ingrese Y");
-			do {
-				respuesta = input.nextLine();
-			} while (respuesta.equals("Y"));
-			registro.setEstado("Enviada");
-			System.out.println("Ha completado la actividad con exito");
-			break;
-		case "RecursoEducativo":
-			System.out.println("Lea la descripcion de la tarea, cuando ya la haya enviado al profesor, ingrese Y");
-			do {
-				respuesta = input.nextLine();
-			} while (!(respuesta.equals("Y")));
-			registro.setEstado("Completada");
-			registro.setFechaTerminado(LocalDateTime.now());
-			System.out.println("Ha completado la actividad con exito");
-			break;
-		case "Encuesta":
-			respuestas = registro.getRespuestas();
-			preguntas = respuestas.keySet();
-			for (String pregunta : preguntas) {
-				System.out.println(pregunta);
-				System.out.println("Ingrese su respuesta: ");
-				respuesta = input.nextLine();
-				respuestas.put(pregunta, respuesta);
-			}
-			registro.setEstado("Completada");
-			registro.setFechaTerminado(LocalDateTime.now());
-			System.out.println("Ha completado la actividad con exito");
-			break;
-		case "Quiz":
-			String textoA = null, textoB = null, textoC = null, textoD = null;
-			respuestas = registro.getRespuestas();
-			preguntas = respuestas.keySet();
-			List<PreguntaMultiple> opciones = actividad.getPreguntasMultiples();
-			for (PreguntaMultiple pregunta : opciones) {
-				System.out.println(pregunta.getTextoPregunta());
-				List<Opcion> variantes = pregunta.getOpciones();
-				textoA = variantes.get(0).getTextoOpcion();
-				System.out.printf("A. %s\n", textoA);
-				
-				textoB = variantes.get(1).getTextoOpcion();
-				System.out.printf("B. %s\n", textoB);
-				
-				textoC = variantes.get(2).getTextoOpcion();
-				System.out.printf("C. %s\n", textoC);
-				
-				textoD = variantes.get(3).getTextoOpcion();
-				System.out.printf("D. %s\n", textoD);
-				
-				System.out.println("Ingrese la letra de la opcion que quiere elegir: ");
-				do {
-				respuesta = input.nextLine();
-				} while (!(respuesta.equals("A") || respuesta.equals("B") || respuesta.equals("C") || respuesta.equals("D")));
-				switch (respuesta) {
-					case "A":
-					respuestas.put(pregunta.getTextoPregunta(), textoA);
-						break;
-					case "B":
-						respuestas.put(pregunta.getTextoPregunta(), textoB);
-						break;
-					case "C":
-						respuestas.put(pregunta.getTextoPregunta(), textoC);
-						break;
-					case "D":
-						respuestas.put(pregunta.getTextoPregunta(), textoD);
-						break;
-				}
-			}
-			registro.setEstado("Completada");
-			registro.setFechaTerminado(LocalDateTime.now());
-			System.out.println("Ha completado la actividad con exito");
-			break;
-		case "Examen":
-			respuestas = registro.getRespuestas();
-			preguntas = respuestas.keySet();
-			for (String pregunta : preguntas) {
-				System.out.println(pregunta);
-				System.out.println("Ingrese su respuesta: ");
-				respuesta = input.nextLine();
-				respuestas.put(pregunta, respuesta);
-			}
-			registro.setEstado("Enviada");
-			System.out.println("Ha enviado la actividad con exito");
-			break;
-		}
-	}
- 	
 	public void mostrarProgreso (int idLP, String login) {
 		RegistroLearningPath rlp = null;
-		if (registrosLP.containsKey(idLP)) {
-			ArrayList<RegistroLearningPath> registros = registrosLP.get(idLP);
+		if (registrosLp.containsKey(idLP)) {
+			ArrayList<RegistroLearningPath> registros = registrosLp.get(idLP);
 			for (RegistroLearningPath registro : registros) {
 				if (registro.getLoginEstudiante().equals(login)) {
 					rlp = registro;
