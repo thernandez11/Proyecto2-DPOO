@@ -61,6 +61,7 @@ public class ControladorRegistros {
 		rlp.setRegistrosA(registros);
 	}
 	
+	//Consultar registros especificos
 	public RegistroLearningPath getRegistroLp(String loginActual, int idLp) {
 		ArrayList<RegistroLearningPath> rlps = registrosLp.get(idLp);
 		for(RegistroLearningPath rlp : rlps) {
@@ -80,7 +81,32 @@ public class ControladorRegistros {
 		}
 		return null;
 	}
+	public List<Integer> getActividadesPendientes(String loginActual, int idLp) {
+		List<Integer> ids = new ArrayList<>();
+		RegistroLearningPath rlp = getRegistroLp(loginActual, idLp);
+		List<RegistroActividad> ras = rlp.getRegistrosA();
+		for (RegistroActividad ra : ras) {
+			if (!(ra.getEstado().equals("Completado") || ra.getEstado().equals("Enviado"))) {
+				ids.add(ra.getIdActividad());
+			}
+		}
+		return ids;
+	}
+	public List<RegistroActividad> getActividadesEnviadasLp(int idLp) {
+		List<RegistroActividad> ras = new ArrayList<>();
+		ArrayList<RegistroLearningPath> rlps = registrosLp.get(idLp);
+		for (RegistroLearningPath rlp : rlps) {
+			List<RegistroActividad> registros = rlp.getRegistrosA();
+			for (RegistroActividad ra : registros) {
+				if (ra.getEstado().equals("Enviado")) {
+					ras.add(ra);
+				}
+			}
+		}
+		return ras;
+	}
 	
+	//Ediciones registroActividad
 	public void editarFechaInicio(RegistroActividad ra) {
 		LocalDateTime fecha = LocalDateTime.now();
 		ra.setFechaInicio(fecha);
@@ -120,6 +146,7 @@ public class ControladorRegistros {
 		ra.setNota(nota);
 	}
 	
+	//Estado y estadisticas registro learning path
 	public float tiempoDedicadoPorActividad(int idLP) {
 		float terminados = 0;
 		float tiempo = 0;

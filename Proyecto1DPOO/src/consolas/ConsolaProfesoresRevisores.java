@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class ConsolaProfesoresRevisores {
 	private ControladorActividad AC;
@@ -65,11 +66,12 @@ public class ConsolaProfesoresRevisores {
 					+ "3. Ver reseñas de una actividad\n"
 					+ "4. Ver learning paths propios\n"
 					+ "5. Ver estadisticas de learning path propio\n"
-					+ "5. Revisar progreso estudiante\n"
-					+ "6. Salir");
+					+ "5. Revisar actividad estudiante\n"
+					+ "7. Revisar progreso estudiante\n"
+					+ "8. Salir");
 			respuesta = input.nextInt();
 			input.nextLine();
-			if (respuesta < 1 || respuesta > 7) {
+			if (respuesta < 1 || respuesta > 8) {
 				System.out.println("El numero que ha ingresado no esta en las opciones disponibles. Intente de nuevo.");
 			}
 			switch (respuesta) {
@@ -89,10 +91,13 @@ public class ConsolaProfesoresRevisores {
 					verEstadisticasLearningPathPropio();
 					break;
 				case 6:
+					revisarActividadEnviada();
+					break;
+				case 7:
 					revisarProgreso();
 					break;
 			}
-		} while (respuesta != 7);
+		} while (respuesta != 8);
 		salvarDatos();
 	}
 	
@@ -218,7 +223,69 @@ public class ConsolaProfesoresRevisores {
 		}
 	}
 	
-	//Revisar progreso de un estudiante
+	//Revisar actividades y progreso de un estudiante
+	private void revisarActividadEnviada() {
+		System.out.println("Ingrese el id del learning path que quiere revisar");
+		int idLP = input.nextInt();
+		input.nextLine();
+		LearningPath lp = LPC.getLearningPath(idLP);
+		if (lp.getLoginCreador().equals(loginActual)) {
+			List<RegistroActividad> ras = RGC.getActividadesEnviadasLp(idLP);
+			for (int i = 0; i < ras.size(); i++) {
+				RegistroActividad ra = ras.get(i);
+				System.out.printf("\n%d. \n", i);
+				System.out.printf(" ID actividad: %d.\n", ra.getIdActividad());
+				System.out.printf(" Fecha iniciado: %s.\n", ra.getFechaInicio().toString());
+			}
+			System.out.println("Ingrese el numero de la actividad que quiere revisar");
+			int index = input.nextInt();
+			input.nextLine();
+			if (index > ras.size() + 1 && index >= 0) {
+				if (ras.get(index).getRespuestas() == null) {
+					revisarActividadTarea(ras.get(index));
+				} else {
+					revisarActividadExamen(ras.get(index));
+				}
+			} else {
+				System.out.println("El numero que ha puesto no esta dentro de las opciones.");
+			}
+		} else {
+			System.out.println("Este learning path no es suyo, no puede revisarlo");
+		}
+	}
+	private void revisarActividadTarea(RegistroActividad ra) {
+		String respuesta;
+		System.out.println("Revise su correo y busque la tarea del estudiante, ingrese Y si la aprueba y N si no lo hace.");
+		do {
+			respuesta = input.nextLine();
+		} while (!(respuesta.equals("Y") || respuesta.equals("N")));
+		switch (respuesta) {
+			case "Y":
+				RGC.editarEstado(ra, "Completada");
+				break;
+			case "N":
+				RGC.editarEstado(ra, "Desaprovado");
+				break;
+		}
+	}
+	private void revisarActividadExamen(RegistroActividad ra) {
+		HashMap<String, String> respuestas = ra.getRespuestas();
+		Set<String> preguntas = respuestas.keySet();
+		for (String pregunta : preguntas ) {
+			System.out.printf("\nPregunta: %s", pregunta);
+			System.out.printf("\nRespuesta: %s", respuestas.get(pregunta));
+		}
+		System.out.println("Ingrese la nota que le quiere asignar al examen");
+		int nota = input.nextInt();
+		input.nextLine();
+		Actividad a = AC.getActividad(ra.getIdActividad());
+		if (nota >= a.getNotaMinima()) {
+			RGC.editarEstado(ra, "Completada");
+		} else {
+			RGC.editarEstado(ra, "Desaprovado");
+		}
+		RGC.editarNota(ra, nota);
+	}
 	private void revisarProgreso() {
 		System.out.println("Ingrese el id del learning path que quiere revisar");
 		int idLP = input.nextInt();

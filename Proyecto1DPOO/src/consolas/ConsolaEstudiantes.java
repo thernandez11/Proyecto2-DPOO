@@ -243,7 +243,7 @@ public class ConsolaEstudiantes {
 		int idLP = input.nextInt();
 		input.nextLine();
 		
-		verActividadesLp(LPC.getIdsActividadesLP(idLP));
+		verActividadesLp(RGC.getActividadesPendientes(loginActual, idLP));
 		System.out.println("Digite el id de la actividad que quiere realizar");
 		int idA = input.nextInt();
 		input.nextLine();

@@ -44,6 +44,9 @@ public class ControladorActividad {
 	public List<PreguntaMultiple> getPreguntasMultiples(Actividad a) {
 		return a.getPreguntasMultiples();
 	}
+	public int getNotaMinima(Actividad a) {
+		return a.getNotaMinima();
+	}
 	
 	//Creacion Actividades
 	public int crearActividad(String loginActual) {
