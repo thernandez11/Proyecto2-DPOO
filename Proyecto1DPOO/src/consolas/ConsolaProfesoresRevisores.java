@@ -2,11 +2,11 @@ package consolas;
 import controladores.*;
 import componentes.*;
 import java.util.Scanner;
+import java.util.Set;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 public class ConsolaProfesoresRevisores {
 	private ControladorActividad AC;
@@ -227,6 +227,28 @@ public class ConsolaProfesoresRevisores {
 		System.out.println("Ingrese el login del estudiante que quiere revisar");
 		String login = input.nextLine();
 		
-		RGC.mostrarProgreso(idLP, login);
+		RegistroLearningPath rlp = RGC.getRegistroLp(login, idLP);
+		System.out.println("Esta es la informacion para el estudiante: ");
+		System.out.printf("Estado: %s\n", rlp.getEstado());
+		System.out.printf("Fecha de inscripcion: %s\n", rlp.getFechaInscrito());
+		System.out.printf("Login: %s\n", rlp.getLoginEstudiante());
+		for (RegistroActividad ra : rlp.getRegistrosA()) {
+			System.out.printf("Actividad: %s\n", ra.getIdActividad());
+			System.out.printf("Estado: %s\n", ra.getEstado());
+			if (ra.getRespuestas() != null) {
+				System.out.println("Respuestas:");
+				HashMap<String, String> respuestas = ra.getRespuestas();
+				Set<String> preguntas = respuestas.keySet();
+				if (!(ra.getEstado().equals("No enviado"))) {
+					for (String pregunta : preguntas) {
+						System.out.printf("\nPregunta: %s\n", pregunta);
+						System.out.printf("Respuesta: %s\n", respuestas.get(pregunta));
+					}
+				} else {
+					System.out.println("No hay preguntas respondidas");
+				}
+			}
+		}
 	}
+	
 }

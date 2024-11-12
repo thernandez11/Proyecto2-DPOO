@@ -5,7 +5,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
 import componentes.*;
 
@@ -158,45 +157,6 @@ public class ControladorRegistros {
 			return true;
 		} else {
 			return false;
-		}
-	}
-
-	public void mostrarProgreso (int idLP, String login) {
-		RegistroLearningPath rlp = null;
-		if (registrosLp.containsKey(idLP)) {
-			ArrayList<RegistroLearningPath> registros = registrosLp.get(idLP);
-			for (RegistroLearningPath registro : registros) {
-				if (registro.getLoginEstudiante().equals(login)) {
-					rlp = registro;
-				}
-			}
-			if (rlp != null) {
-				System.out.println("Esta es la informacion para el estudiante: ");
-				System.out.printf("Estado: %s\n", rlp.getEstado());
-				System.out.printf("Fecha de inscripcion: %s\n", rlp.getFechaInscrito());
-				System.out.printf("Login: %s\n", rlp.getLoginEstudiante());
-				for (RegistroActividad ra : rlp.getRegistrosA()) {
-					System.out.printf("Actividad: %s\n", ra.getIdActividad());
-					System.out.printf("Estado: %s\n", ra.getEstado());
-					if (ra.getRespuestas() != null) {
-						System.out.println("Respuestas:");
-						HashMap<String, String> respuestas = ra.getRespuestas();
-						Set<String> preguntas = respuestas.keySet();
-						if (!(ra.getEstado().equals("No enviado"))) {
-							for (String pregunta : preguntas) {
-								System.out.printf("\nPregunta: %s\n", pregunta);
-								System.out.printf("Respuesta: %s\n", respuestas.get(pregunta));
-							}
-						} else {
-							System.out.println("No hay preguntas respondidas");
-						}
-					}
-				}
-			} else {
-				System.out.println("El estudiante no esta inscrito en el learning path");
-			}
-		} else {
-			System.out.println("El learning path no existe o no tiene estudiantes registrados");
 		}
 	}
 }

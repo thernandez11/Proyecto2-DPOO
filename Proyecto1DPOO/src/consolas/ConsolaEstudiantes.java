@@ -327,28 +327,49 @@ public class ConsolaEstudiantes {
 		String textoA = null, textoB = null, textoC = null, textoD = null;
 		HashMap<String, String> respuestas = ra.getRespuestas();
 		List<PreguntaMultiple> opciones = a.getPreguntasMultiples();
+		int puntosPregunta = 100/opciones.size();
+		int nota = 0;
+		String correcta = "";
 		for (PreguntaMultiple pregunta : opciones) {
 			System.out.println(pregunta.getTextoPregunta());
 			List<Opcion> variantes = pregunta.getOpciones();
+			
+			
 			textoA = variantes.get(0).getTextoOpcion();
+			if (variantes.get(0).getCorrecta()) {
+				correcta = "A";
+			}
 			System.out.printf("A. %s\n", textoA);
 			
 			textoB = variantes.get(1).getTextoOpcion();
+			if (variantes.get(1).getCorrecta()) {
+				correcta = "B";
+			}
 			System.out.printf("B. %s\n", textoB);
 			
 			textoC = variantes.get(2).getTextoOpcion();
+			if (variantes.get(2).getCorrecta()) {
+				correcta = "C";
+			}
 			System.out.printf("C. %s\n", textoC);
 			
 			textoD = variantes.get(3).getTextoOpcion();
+			if (variantes.get(3).getCorrecta()) {
+				correcta = "D";
+			}
 			System.out.printf("D. %s\n", textoD);
 			
 			System.out.println("Ingrese la letra de la opcion que quiere elegir: ");
 			do {
 			respuesta = input.nextLine();
+			if (respuesta.equals(correcta)) {
+				nota += puntosPregunta;
+			}
 			} while (!(respuesta.equals("A") || respuesta.equals("B") || respuesta.equals("C") || respuesta.equals("D")));
+			
 			switch (respuesta) {
 				case "A":
-				respuestas.put(pregunta.getTextoPregunta(), textoA);
+					respuestas.put(pregunta.getTextoPregunta(), textoA);
 					break;
 				case "B":
 					respuestas.put(pregunta.getTextoPregunta(), textoB);
@@ -361,7 +382,14 @@ public class ConsolaEstudiantes {
 					break;
 			}
 		}
-		ra.setEstado("Completada");
+		ra.setNota(nota);
+		if (nota < a.getNotaMinima()) {
+			ra.setEstado("Desaprovado");
+			System.out.println("Usted no aprobo el quiz, intente de nuevo");
+		} else {
+			ra.setEstado("Completada");
+			System.out.println("Aprobado!");
+		}
 		ra.setFechaTerminado(LocalDateTime.now());
 	}
 	public void desarrollarActividadQuizVerdaderoFalso(Actividad a, RegistroActividad ra) {
@@ -370,18 +398,31 @@ public class ConsolaEstudiantes {
 		String textoA = null, textoB = null;
 		HashMap<String, String> respuestas = ra.getRespuestas();
 		List<PreguntaVerdaderoFalso> opciones = a.getPreguntasVerdaderoFalso();
+		int puntosPregunta = 100/opciones.size();
+		int nota = 0;
+		String correcta = "";
 		for (PreguntaVerdaderoFalso pregunta : opciones) {
 			System.out.println(pregunta.getTextoPregunta());
 			List<Opcion> variantes = pregunta.getOpciones();
+			
 			textoA = variantes.get(0).getTextoOpcion();
+			if (variantes.get(0).getCorrecta()) {
+				correcta = "V";
+			}
 			System.out.printf("V. %s\n", textoA);
 			
 			textoB = variantes.get(1).getTextoOpcion();
+			if (variantes.get(1).getCorrecta()) {
+				correcta = "F";
+			}
 			System.out.printf("F. %s\n", textoB);
 			
 			System.out.println("Ingrese la letra de la opcion que quiere elegir: ");
 			do {
 			respuesta = input.nextLine();
+			if (respuesta.equals(correcta)) {
+				nota += puntosPregunta;
+			}
 			} while (!(respuesta.equals("V") || respuesta.equals("F")));
 			switch (respuesta) {
 				case "V":
@@ -392,7 +433,14 @@ public class ConsolaEstudiantes {
 					break;
 			}
 		}
-		ra.setEstado("Completada");
+		ra.setNota(nota);
+		if (nota < a.getNotaMinima()) {
+			ra.setEstado("Desaprovado");
+			System.out.println("Usted no aprobo el quiz, intente de nuevo");
+		} else {
+			ra.setEstado("Completada");
+			System.out.println("Aprobado!");
+		}
 		ra.setFechaTerminado(LocalDateTime.now());
 	}
 	
@@ -402,6 +450,27 @@ public class ConsolaEstudiantes {
 		System.out.println("Ingrese el id del learning path que quiere revisar");
 		int idLP = input.nextInt();
 		input.nextLine();
-		RGC.mostrarProgreso(idLP, login);
+		RegistroLearningPath rlp = RGC.getRegistroLp(login, idLP);
+		System.out.println("Esta es la informacion para el estudiante: ");
+		System.out.printf("Estado: %s\n", rlp.getEstado());
+		System.out.printf("Fecha de inscripcion: %s\n", rlp.getFechaInscrito());
+		System.out.printf("Login: %s\n", rlp.getLoginEstudiante());
+		for (RegistroActividad ra : rlp.getRegistrosA()) {
+			System.out.printf("Actividad: %s\n", ra.getIdActividad());
+			System.out.printf("Estado: %s\n", ra.getEstado());
+			if (ra.getRespuestas() != null) {
+				System.out.println("Respuestas:");
+				HashMap<String, String> respuestas = ra.getRespuestas();
+				Set<String> preguntas = respuestas.keySet();
+				if (!(ra.getEstado().equals("No enviado"))) {
+					for (String pregunta : preguntas) {
+						System.out.printf("\nPregunta: %s\n", pregunta);
+						System.out.printf("Respuesta: %s\n", respuestas.get(pregunta));
+					}
+				} else {
+					System.out.println("No hay preguntas respondidas");
+				}
+			}
+		}
 	}
 }
