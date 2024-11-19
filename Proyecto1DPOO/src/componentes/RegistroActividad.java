@@ -11,15 +11,12 @@ public class RegistroActividad {
 	private String estado;
 	private HashMap<String, String> respuestas;
 	private boolean obligatoria;
-	private float nota;
+	private int nota;
 	
 	//Constructor
-	public RegistroActividad(int idActividad, String estado, HashMap<String, String> respuestas, boolean obligatoria, float nota) {
+	public RegistroActividad(int idActividad, boolean obligatoria) {
 		this.idActividad = idActividad;
-		this.estado = estado;
-		this.respuestas = respuestas;
 		this.obligatoria = obligatoria;
-		this.nota = nota;
 	}
 	
 	//Getters y setters
@@ -71,11 +68,11 @@ public class RegistroActividad {
 		this.obligatoria = obligatoria;
 	}
 	
-	public float getNota() {
+	public int getNota() {
 		return nota;
 	}
 
-	public void setNota(float nota) {
+	public void setNota(int nota) {
 		this.nota = nota;
 	}
 }

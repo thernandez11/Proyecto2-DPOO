@@ -85,7 +85,7 @@ public class ControladorResena {
             }
             System.out.println("Reseñas cargadas exitosamente desde " + archivo.getAbsolutePath());
         } catch (FileNotFoundException e) {
-            System.out.println("El archivo no existe. Se creará al guardar.");
+            System.out.println("El archivo no existe. Se creará al cerrar la aplicacion.");
         } catch (IOException e) {
             System.err.println("Error al cargar las reseñas: " + e.getMessage());
             throw e; // Propagar la excepción para manejarla más arriba si es necesario

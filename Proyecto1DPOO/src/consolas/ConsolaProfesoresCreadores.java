@@ -13,7 +13,6 @@ public class ConsolaProfesoresCreadores {
 	private ControladorEstudiante EC;
 	private ControladorLearningPath LPC;
 	private ControladorProfesor PC;
-	private ControladorRegistros RGC;
 	private ControladorResena RC;
 	private Scanner input;
 	private String loginActual;
@@ -24,25 +23,24 @@ public class ConsolaProfesoresCreadores {
         this.EC = new ControladorEstudiante();
         this.LPC = new ControladorLearningPath();
         this.PC = new ControladorProfesor();
-        this.RGC = new ControladorRegistros();
         this.RC = new ControladorResena();
         this.input = new Scanner(System.in);
     }
-	
+
+	//Main y consola principal profesores creadores
 	public static void main(String[] args) throws IOException {
 		
 		ConsolaProfesoresCreadores c = new ConsolaProfesoresCreadores();
 		c.consolaRegistro();
 		c.input.close();
 	}
-	
 	private void consolaRegistro() throws IOException {
 		cargarDatos();
 		int respuesta;
 		do {
 			System.out.println("\nDigite el numero de la opcion que quiere usar.\n"
 					+ "1. Ingresar como profesor\n"
-					+ "2. Registrarse como profesor\n");
+					+ "2. Registrarse como profesor");
 			respuesta = input.nextInt();
 			input.nextLine();
 			if (respuesta < 1 || respuesta > 2) {
@@ -68,11 +66,10 @@ public class ConsolaProfesoresCreadores {
 					+ "6. Crear reseña\n"
 					+ "7. Editar learning path\n"
 					+ "8. Editar actividad\n"
-					+ "9. Revisar progreso estudiante\\n"
-					+ "10. Salir");
+					+ "9. Salir");
 			respuesta = input.nextInt();
 			input.nextLine();
-			if (respuesta < 1 || respuesta > 10) {
+			if (respuesta < 1 || respuesta > 9) {
 				System.out.println("El numero que ha ingresado no esta en las opciones disponibles. Intente de nuevo.");
 			}
 			switch (respuesta) {
@@ -100,15 +97,12 @@ public class ConsolaProfesoresCreadores {
 				case 8:
 					editarActividad();
 					break;
-				case 9:
-					revisarProgreso();
-					break;
 			}
-		} while (respuesta != 10);
+		} while (respuesta != 9);
 		salvarDatos();
 	}
 	
-
+	//Salvar y cargar datos
 	private void salvarDatos() throws IOException {
 		EC.guardarEstudiantesEnArchivo("estudiantes.txt");
 		PC.guardarProfesoresEnArchivo("profesores.txt");
@@ -122,6 +116,7 @@ public class ConsolaProfesoresCreadores {
 		RC.cargarResenasDesdeArchivo("resenas.txt");
 	}
 
+	//Registrar y ingresar profesores
 	private void registrarProfesor() {
 		
 		System.out.println("Ingrese su login:");
@@ -136,7 +131,6 @@ public class ConsolaProfesoresCreadores {
 			System.out.println("Usuario registrado exitosamente!");
 		}
 	}
-
 	private void ingresarProfesor() {
 		
 		System.out.println("\nIngrese su login:");
@@ -158,6 +152,7 @@ public class ConsolaProfesoresCreadores {
 		}
 	}
 
+	//Crear componentes Learning Paths
 	private void crearActividad() {
 		int idA = AC.crearActividad(loginActual);
 				
@@ -178,9 +173,11 @@ public class ConsolaProfesoresCreadores {
 		input.nextLine();
 		AC.editarDuracion(idA, duracion);
 		
-		System.out.println("\nIngrese la fecha limite de la actividad en formato (yyyy-MM-ddThh:mm:ss):");
+		System.out.println("\nIngrese la fecha limite de la actividad en formato (yyyy-MM-ddThh:mm:ss), si no quiere poner una, ingrese 0:");
 		String fechaLimite = input.nextLine();
-		AC.editarFechaLimite(idA, fechaLimite);
+		if (!(fechaLimite.equals("0"))) {
+			AC.editarFechaLimite(idA, fechaLimite);
+		}
 		
 		System.out.println("\nIngrese las actividades previas de la actividad:");
 		ArrayList<Integer> idActividadesPrevias = seleccionadorActividadesids();
@@ -257,6 +254,7 @@ public class ConsolaProfesoresCreadores {
 		System.out.println("Reseña creada de manera exitosa!");
 	}
 	
+	//Seleccionadores de actividades
 	private HashMap<Actividad, Boolean> seleccionadorActividadesLearningPath() {
 		int id;
 		Boolean obligatoria;
@@ -303,7 +301,7 @@ public class ConsolaProfesoresCreadores {
 					+ "2. ActividadRecursoEducativo\n"
 					+ "3. ActividadEncuesta\n"
 					+ "4. ActividadQuizMultiple\n"
-					+ "5. ActividadQuizVerdaderoFalso"
+					+ "5. ActividadQuizVerdaderoFalso\n"
 					+ "6. ActividadExamen");
 			respuesta = input.nextInt();
 			input.nextLine();
@@ -360,7 +358,6 @@ public class ConsolaProfesoresCreadores {
 			System.out.println("Usted no es el creador de esta actividad, si quiere editarla, clonela.");
 		}
 	}
-	
 	private void menuEdicionActividad(int idA) {
 		int respuesta;
 		do {
@@ -506,7 +503,7 @@ public class ConsolaProfesoresCreadores {
 					AC.editarPreguntasMultiples(idA, preguntas, correctas);
 					break;
 				case 2:
-					System.out.println("Ingrese la nota minima de la actividad");
+					System.out.println("Ingrese la nota minima de la actividad sobre 100");
 					int notaMinima = input.nextInt();
 					input.nextLine();
 					AC.editarNotaMinima(idA, notaMinima);
@@ -539,14 +536,14 @@ public class ConsolaProfesoresCreadores {
 						if (!(pregunta.equals("N"))) {
 							HashMap<String, String> opciones = new HashMap<>();
 							
-							System.out.println("Ingrese la primera opcion:");
+							System.out.println("La primera opcion es verdadero:");
 							opcion1 = "Verdadero";
 							
 							System.out.println("Ingrese la explicacion de la primera opcion:");
 							explicacion1 = input.nextLine();
 							opciones.put(opcion1, explicacion1);
 							
-							System.out.println("Ingrese la segunda opcion:");
+							System.out.println("La segunda opcion es falso:");
 							opcion2 = "Falso";
 							
 							System.out.println("Ingrese la explicacion de la segunda opcion:");
@@ -554,7 +551,7 @@ public class ConsolaProfesoresCreadores {
 							opciones.put(opcion2, explicacion2);
 							
 							do {
-								System.out.println("Ingrese el numero de la opcion correcta:");
+								System.out.println("Ingrese el numero de la opcion correcta 1 verdadero, 2 falso:");
 								correcta = input.nextInt();
 								input.nextLine();
 								if (correcta < 1 || correcta > 2) {
@@ -568,7 +565,7 @@ public class ConsolaProfesoresCreadores {
 					AC.editarPreguntasMultiples(idA, preguntas, correctas);
 					break;
 				case 2:
-					System.out.println("Ingrese la nota minima de la actividad");
+					System.out.println("Ingrese la nota minima de la actividad sobre 100");
 					int notaMinima = input.nextInt();
 					input.nextLine();
 					AC.editarNotaMinima(idA, notaMinima);
@@ -603,7 +600,7 @@ public class ConsolaProfesoresCreadores {
 					AC.editarPreguntasAbiertas(idA, preguntas);
 					break;
 				case 2:
-					System.out.println("Ingrese la nota minima de la actividad");
+					System.out.println("Ingrese la nota minima de la actividad sobre 100");
 					int notaMinima = input.nextInt();
 					input.nextLine();
 					AC.editarNotaMinima(idA, notaMinima);
@@ -653,7 +650,6 @@ public class ConsolaProfesoresCreadores {
 			System.out.println("Usted no es el creador de este learning path");
 		}
 	}
-	
 	private void menuEdicionLearningPath(int idLp) {
 		int respuesta;
 		do {
@@ -702,11 +698,12 @@ public class ConsolaProfesoresCreadores {
 		LPC.editarFechaModificacion(idLp);
 	}
 
+	//Consultar componentes Learning Paths
 	private void verActividades() {
 		Collection<Actividad> actividades = AC.getActividades();
 		System.out.println("\nEstas son las actividades disponibles (El numero a su lado corresponde a su id).");
 		for (Actividad a : actividades) {
-			System.out.printf("%d.", a.getId());
+			System.out.printf("ID: %d.", a.getId());
 			System.out.printf("\n Descripcion: %s.", a.getDescripcion());
 			System.out.printf("\n Creador: %s.", a.getLoginCreador());
 			System.out.printf("\n Tipo: %s.", a.getTipo());
@@ -733,22 +730,23 @@ public class ConsolaProfesoresCreadores {
 		Collection<LearningPath> learningPaths = LPC.getLearningPaths();
 		System.out.println("\nEstos son los learning paths disponibles (El numero a su lado corresponde a su id).");
 		for (LearningPath lp : learningPaths) {
-			System.out.printf("%d.", lp.getId());
+			System.out.printf("ID: %d.", lp.getId());
 			System.out.printf("\n Titulo: %s.", lp.getTitulo());
 			System.out.printf("\n Descripcion: %s.", lp.getDescripcionGeneral());
 			System.out.printf("\n Creador: %s.", lp.getLoginCreador());
 			System.out.printf("\n FechaCreacion: %s.", lp.getFechaCreacion());
 			System.out.printf("\n FechaModificacion: %s.", lp.getFechaModificacion());
 			System.out.printf("\n Nivel de dificultad: %s.", lp.getNivelDificultad());
-			System.out.printf("\n Duracion en minutos: %s.\n", lp.getDuracion());
-			System.out.printf("\n Version: %s.", lp.getVersion());
+			System.out.printf("\n Duracion en minutos: %s.", lp.getDuracion());
+			System.out.printf("\n Version: %s. \n", lp.getVersion());
 		}
 	}
 	
+	//Crear actividades por tipo
 	private void crearActividadExamen(int idA) {
 		String pregunta;
 		List<String> preguntas = new ArrayList<>();
-		System.out.println("Ingrese la nota minima de la actividad");
+		System.out.println("Ingrese la nota minima de la actividad sobre 100");
 		int notaMinima = input.nextInt();
 		input.nextLine();
 		System.out.println("Ingrese las preguntas que quiere realizar en el examen una por una, escriba N cuando quiera parar.");
@@ -769,7 +767,7 @@ public class ConsolaProfesoresCreadores {
 		
 		HashMap<String, HashMap<String, String>> preguntas = new HashMap<>();
 		ArrayList<Integer> correctas = new ArrayList<>();
-		System.out.println("Ingrese la nota minima de la actividad");
+		System.out.println("Ingrese la nota minima de la actividad sobre 100");
 		int notaMinima = input.nextInt();
 		input.nextLine();
 		System.out.println("Ingrese las preguntas que quiere realizar en el quiz una por una, escriba N cuando quiera parar.");
@@ -828,7 +826,7 @@ public class ConsolaProfesoresCreadores {
 		
 		HashMap<String, HashMap<String, String>> preguntas = new HashMap<>();
 		ArrayList<Integer> correctas = new ArrayList<>();
-		System.out.println("Ingrese la nota minima de la actividad");
+		System.out.println("Ingrese la nota minima de la actividad sobre 100");
 		int notaMinima = input.nextInt();
 		input.nextLine();
 		System.out.println("Ingrese las preguntas que quiere realizar en el quiz una por una, escriba N cuando quiera parar.");
@@ -838,14 +836,14 @@ public class ConsolaProfesoresCreadores {
 			if (!(pregunta.equals("N"))) {
 				HashMap<String, String> opciones = new HashMap<>();
 				
-				System.out.println("Ingrese la primera opcion:");
+				System.out.println("La primera opcion es verdadero:");
 				opcion1 = "Verdadero";
 				
 				System.out.println("Ingrese la explicacion de la primera opcion:");
 				explicacion1 = input.nextLine();
 				opciones.put(opcion1, explicacion1);
 				
-				System.out.println("Ingrese la segunda opcion:");
+				System.out.println("La segunda opcion es falso:");
 				opcion2 = "Falso";
 				
 				System.out.println("Ingrese la explicacion de la segunda opcion:");
@@ -853,7 +851,7 @@ public class ConsolaProfesoresCreadores {
 				opciones.put(opcion2, explicacion2);
 				
 				do {
-					System.out.println("Ingrese el numero de la opcion correcta:");
+					System.out.println("Ingrese el numero de la opcion correcta 1 verdadero, 2 falso:");
 					correcta = input.nextInt();
 					input.nextLine();
 					if (correcta < 1 || correcta > 2) {
@@ -885,18 +883,5 @@ public class ConsolaProfesoresCreadores {
 		String url = input.nextLine();
 		AC.editarURL(idA, url);
 	}
-	
-	private void revisarProgreso() {
-		String login;
-		if (rolActual.equals("Estudiante")) {
-			login = loginActual;
-		} else {
-			System.out.println("Ingrese el login del estudiante que quiere revisar: ");
-			login = input.nextLine();
-		}
-		System.out.println("Ingrese el id del learning path que quiere revisar");
-		int idLP = input.nextInt();
-		input.nextLine();
-		RGC.mostrarProgreso(idLP, login);
-	}
+
 }

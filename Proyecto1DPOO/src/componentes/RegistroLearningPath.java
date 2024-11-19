@@ -7,16 +7,13 @@ public class RegistroLearningPath {
 	private String loginEstudiante;
 	private LocalDateTime fechaInscrito;
 	private LocalDateTime fechaTerminado;
-	private List<RegistroActividad> RegistrosA;
 	private String estado;
+	private List<RegistroActividad> RegistrosA;
 	
 	//Constructor
-	public RegistroLearningPath(String loginEstudiante, LocalDateTime fechaInscrito, LocalDateTime fechaTerminado,
-			List<RegistroActividad> registrosA) {
+	public RegistroLearningPath(String loginEstudiante, LocalDateTime fechaInscrito) {
 		this.loginEstudiante = loginEstudiante;
-		this.fechaInscrito = fechaInscrito;
-		this.fechaTerminado = fechaTerminado;
-		this.RegistrosA = registrosA;
+		this.fechaInscrito = fechaInscrito; 
 		this.estado = "Iniciado";
 	}
 

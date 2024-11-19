@@ -19,7 +19,7 @@ public class Actividad {
 	private List<PreguntaMultiple> preguntasMultiples;
 	private List<PreguntaVerdaderoFalso> preguntasVerdaderoFalso;
 	private List<PreguntaAbierta> preguntasAbiertas;
-	private float notaMinima;
+	private int notaMinima;
 	
 	//Constructor
 	public Actividad(int id, String loginCreador) {
@@ -132,12 +132,11 @@ public class Actividad {
 		this.preguntasAbiertas = preguntasAbiertas;
 	}
 	
-	public float getNotaMinima() {
+	public int getNotaMinima() {
 		return notaMinima;
 	}
 	
-	public void setNotaMinima(float notaMinima) 
-	{
+	public void setNotaMinima(int notaMinima) {
 		this.notaMinima = notaMinima;
 	}
 
