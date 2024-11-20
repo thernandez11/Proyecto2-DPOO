@@ -81,4 +81,4 @@ class HU30X {
         assertEquals("Aprobado", registro.getEstado(), "La actividad debería marcarse como aprobada");
         assertEquals(85, registro.getNota(), "La calificación debería coincidir con el valor asignado");
     }
-}       
+}
