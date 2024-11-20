@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import componentes.Actividad;
 import componentes.Opcion;
+import componentes.Pregunta;
 import componentes.PreguntaAbierta;
 import componentes.PreguntaMultiple;
 import componentes.PreguntaVerdaderoFalso;
@@ -47,6 +48,7 @@ public class PersistenciaActividades {
     public void cargarActividades(String archivo, ControladorActividad controladorActividad) throws  IOException{
         String jsonCompleto = new String(Files.readAllBytes(new File(archivo).toPath()));
         JSONArray json = new JSONArray(jsonCompleto);
+        chargeActivities(controladorActividad, json);
     }
     public void guardarActividades(String archivo, ControladorActividad controladorActividad) throws  IOException{
 
@@ -149,7 +151,7 @@ public class PersistenciaActividades {
 
         chargePreviousActivities(actividadesPrevias, controladorActividades);
         chargeNextActivities(actividadesSiguientes, controladorActividades);
-        
+
     }
 
 
