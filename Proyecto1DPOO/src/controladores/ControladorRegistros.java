@@ -10,10 +10,10 @@ import componentes.*;
 
 public class ControladorRegistros {
 
-	private HashMap<Integer, ArrayList<RegistroLearningPath>> registrosLp;
+	HashMap<Integer, ArrayList<RegistroLearningPath>> registrosLp;
 	
 	public ControladorRegistros() {
-		this.setRegistrosLp(new HashMap<>());
+		this.registrosLp = new HashMap<>();
 	}
 	
 	//Crear registros para estudiantes inscritos
@@ -21,13 +21,12 @@ public class ControladorRegistros {
 		LocalDateTime fecha = LocalDateTime.now();
 		RegistroLearningPath rlp = new RegistroLearningPath(loginActual, fecha);
 		int idLp = lp.getId();
-		if (getRegistrosLp().containsKey(idLp)) {
-			ArrayList<RegistroLearningPath> rlps = getRegistrosLp().get(idLp);
+		if (registrosLp.containsKey(idLp)) {
+			ArrayList<RegistroLearningPath> rlps = registrosLp.get(idLp);
 			rlps.add(rlp);
 		} else {
 			ArrayList<RegistroLearningPath> rlps = new ArrayList<>();
 			rlps.add(rlp);
-			getRegistrosLp().put(idLp, rlps);
 		}
 	}
 	public void crearRegistrosActividad(String loginActual, LearningPath lp) {
@@ -64,7 +63,7 @@ public class ControladorRegistros {
 	
 	//Consultar registros especificos
 	public RegistroLearningPath getRegistroLp(String loginActual, int idLp) {
-		ArrayList<RegistroLearningPath> rlps = getRegistrosLp().get(idLp);
+		ArrayList<RegistroLearningPath> rlps = registrosLp.get(idLp);
 		for(RegistroLearningPath rlp : rlps) {
 			if (rlp.getLoginEstudiante().equals(loginActual)) {
 				return rlp;
@@ -95,7 +94,7 @@ public class ControladorRegistros {
 	}
 	public List<RegistroActividad> getActividadesEnviadasLp(int idLp) {
 		List<RegistroActividad> ras = new ArrayList<>();
-		ArrayList<RegistroLearningPath> rlps = getRegistrosLp().get(idLp);
+		ArrayList<RegistroLearningPath> rlps = registrosLp.get(idLp);
 		for (RegistroLearningPath rlp : rlps) {
 			List<RegistroActividad> registros = rlp.getRegistrosA();
 			for (RegistroActividad ra : registros) {
@@ -152,7 +151,7 @@ public class ControladorRegistros {
 		float terminados = 0;
 		float tiempo = 0;
 		
-		ArrayList<RegistroLearningPath> registros = getRegistrosLp().get(idLP);
+		ArrayList<RegistroLearningPath> registros = registrosLp.get(idLP);
 		for (RegistroLearningPath rlp : registros) {
 			List<RegistroActividad> registrosA = rlp.getRegistrosA();
 			for (RegistroActividad ra : registrosA) {
@@ -167,39 +166,24 @@ public class ControladorRegistros {
 		}
 		return 0;
 	}
-	
 	public float porcentajeCompletado(int idLP) {
-	    ArrayList<RegistroLearningPath> registros = getRegistrosLp().get(idLP);
-	    if (registros == null || registros.isEmpty()) {
-	        return 0; // Sin registros
-	    }
-	    float completados = 0;
-	    for (RegistroLearningPath rlp : registros) {
-	        List<RegistroActividad> actividades = rlp.getRegistrosA(); // Obtiene actividades
-	        for (RegistroActividad ra : actividades) {
-	            if ("Completada".equals(ra.getEstado())) { // Revisa el estado de una actividad
-	                completados++;
-	            }
-	        }
-	    }
-	    float totalActividades = registros.get(0).getRegistrosA().size(); // Numero de actividades en Learning Path
-	    return (completados / totalActividades) * 100;
+		ArrayList<RegistroLearningPath> registros = registrosLp.get(idLP);
+		float completados = 0;
+		for (RegistroLearningPath rlp : registros) {
+			if (revisarEstadoRLP(rlp)) {
+				completados++;
+			}
+		}
+		if (registros.size() != 0) {
+			return (completados / registros.size() * 100);
+		}
+		return 0;
 	}
-
-	
 	public boolean revisarEstadoRLP(RegistroLearningPath rlp) {
 		if (rlp.getEstado().equals("Completada")) {
 			return true;
 		} else {
 			return false;
 		}
-	}
-
-	public HashMap<Integer, ArrayList<RegistroLearningPath>> getRegistrosLp() {
-		return registrosLp;
-	}
-
-	public void setRegistrosLp(HashMap<Integer, ArrayList<RegistroLearningPath>> registrosLp) {
-		this.registrosLp = registrosLp;
 	}
 }
