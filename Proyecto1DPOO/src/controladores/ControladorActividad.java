@@ -1,22 +1,23 @@
 package controladores;
 
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.Arrays;
+import java.util.Collection;
+
 import componentes.Actividad;
 import componentes.Opcion;
 import componentes.PreguntaAbierta;
 import componentes.PreguntaMultiple;
 import componentes.PreguntaVerdaderoFalso;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 public class ControladorActividad {
 	
-	public HashMap<Integer, Actividad> actividades;
+	HashMap<Integer, Actividad> actividades;
 	
 	public ControladorActividad() {
 	    this.actividades = new HashMap<>();
