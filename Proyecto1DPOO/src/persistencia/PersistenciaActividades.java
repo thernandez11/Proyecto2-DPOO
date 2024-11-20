@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,6 +22,7 @@ import componentes.PreguntaVerdaderoFalso;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
 
 public class PersistenciaActividades {
@@ -144,7 +146,12 @@ public class PersistenciaActividades {
             actividad.setNotaMinima(jActividad.getInt(NOTA_MINIMA));
             controladorActividades.put(actividad.getId(), actividad);
         }
+
+        chargePreviousActivities(actividadesPrevias, controladorActividades);
+        chargeNextActivities(actividadesSiguientes, controladorActividades);
+        
     }
+
 
 
     private void savePreviousActivities(Actividad actividad, JSONObject jActividad) {
@@ -155,6 +162,26 @@ public class PersistenciaActividades {
         jActividad.put(ACTIVIDADES_PREVIAS, jActividadesPrevias);
     }
 
+    private void chargePreviousActivities(Map<Integer, List<Integer>> actividadesPrevias, Map<Integer, Actividad> controladorActividades) {
+        
+        Set<Integer> ids = actividadesPrevias.keySet();
+
+        for (Integer integer : ids) {
+
+            Actividad actividadPrincipal = controladorActividades.get(integer);
+            List<Integer> previous = actividadesPrevias.get(integer);
+            List<Actividad> previousActivities = new ArrayList<>();
+            for (Integer id : previous) {
+                Actividad actividadPrevia = controladorActividades.get(id);
+                previousActivities.add(actividadPrevia);
+            }
+            actividadPrincipal.setActividadesPrevias(previousActivities);
+            
+        }
+
+    }
+
+
     private void saveNextActivities(Actividad actividad, JSONObject jActividad) {
         JSONArray jActividadesSiguientes = new JSONArray();
         for (Actividad actividadSiguiente : actividad.getActividadesSeguimiento()) {
@@ -163,6 +190,24 @@ public class PersistenciaActividades {
         jActividad.put(ACTIVIDADES_SIGUIENTES, jActividadesSiguientes);
     }
 
+    private void chargeNextActivities(Map<Integer, List<Integer>> actividadesSiguientes, Map<Integer, Actividad> controladorActividades) {
+        
+        Set<Integer> ids = actividadesSiguientes.keySet();
+
+        for (Integer integer : ids) {
+
+            Actividad actividadPrincipal = controladorActividades.get(integer);
+            List<Integer> next = actividadesSiguientes.get(integer);
+            List<Actividad> nextActivities = new ArrayList<>();
+            for (Integer id : next) {
+                Actividad actividadSiguiente = controladorActividades.get(id);
+                nextActivities.add(actividadSiguiente);
+            }
+            actividadPrincipal.setActividadesSeguimiento(nextActivities);
+            
+        }
+
+    }
 
     private void saveQuestion(Pregunta pregunta, JSONObject jPregunta){
 
