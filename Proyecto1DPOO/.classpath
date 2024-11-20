@@ -12,5 +12,10 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
+<<<<<<< HEAD
+=======
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.json-1.6-20240205.jar"/>
+>>>>>>> branch 'main' of https://github.com/thernandez11/Proyecto2-DPOO/
 	<classpathentry kind="output" path="bin"/>
 </classpath>
