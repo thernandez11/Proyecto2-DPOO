@@ -1,6 +1,7 @@
 package persistencia;
 
 import componentes.RegistroActividad;
+import controladores.ControladorActividad;
 import controladores.ControladorRegistros;
 import java.io.File;
 import java.io.IOException;
