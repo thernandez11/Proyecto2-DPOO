@@ -17,6 +17,7 @@ public class RegistroActividad {
 	public RegistroActividad(int idActividad, boolean obligatoria) {
 		this.idActividad = idActividad;
 		this.obligatoria = obligatoria;
+		this.estado = "Pendiente";
 	}
 	
 	//Getters y setters
