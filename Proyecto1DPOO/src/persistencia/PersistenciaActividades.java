@@ -19,6 +19,7 @@ import componentes.Pregunta;
 import componentes.PreguntaAbierta;
 import componentes.PreguntaMultiple;
 import componentes.PreguntaVerdaderoFalso;
+import java.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -142,7 +143,9 @@ public class PersistenciaActividades {
             for (int i = 0; i < jActividadesSiguientes.lenght(); i++) {
                 actividadesSiguientes.get(actividad.getId()).add(jActividadesSiguientes.getInt(i));
             }
-            actividad.setFechaLimite(jActividad.getString(FECHA_LIMITE));
+
+            String fechaLimite = jActividad.getString(FECHA_LIMITE);
+            actividad.setFechaLimite(LocalDateTime.parse(fechaLimite));
             actividad.setUrl(jActividad.getString(URL));
             chargeQuestion(jActividad.getJSONArray(PREGUNTAS), actividad);
             actividad.setNotaMinima(jActividad.getInt(NOTA_MINIMA));
