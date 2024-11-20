@@ -1,11 +1,10 @@
 package controladores;
 
+import componentes.Profesor;
 import java.io.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
-
-import componentes.Profesor;
 
 public class ControladorProfesor {
 
@@ -92,4 +91,5 @@ public class ControladorProfesor {
             throw e;
         }
     }
+
 }
