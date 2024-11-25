@@ -1,9 +1,9 @@
 package controladores;
 
-import java.util.ArrayList;
-import java.io.*;
-
 import componentes.Resena;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ControladorResena {
 
@@ -90,6 +90,11 @@ public class ControladorResena {
             System.err.println("Error al cargar las reseñas: " + e.getMessage());
             throw e; // Propagar la excepción para manejarla más arriba si es necesario
         }
+    }
+
+
+    public List<Resena> getResenas() {
+        return resenas;
     }
 	
 }

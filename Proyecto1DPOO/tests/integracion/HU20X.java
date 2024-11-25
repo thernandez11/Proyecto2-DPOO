@@ -24,7 +24,7 @@ class HU20X {
         // Configuración inicial antes de cada prueba
         profesorCtrl = new ControladorProfesor();
         estudianteCtrl = new ControladorEstudiante();
-        lpCtrl = new ControladorLearningPath();
+        lpCtrl = new ControladorLearningPath(actividadCtrl);
         actividadCtrl = new ControladorActividad();
         resenaCtrl = new ControladorResena();
         registroCtrl = new ControladorRegistros();

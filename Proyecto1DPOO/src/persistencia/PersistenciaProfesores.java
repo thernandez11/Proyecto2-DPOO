@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,7 +15,6 @@ import componentes.Profesor;
 
 public class PersistenciaProfesores {
 
-    private static final String RUTA_ARCHIVO = "profesores.json";
 
     private static final String LOGIN = "login";
     private static final String PASSWORD = "password";
@@ -35,7 +35,7 @@ public class PersistenciaProfesores {
     }
 
     private static void saveProfesores(ControladorProfesor controladorProfesor, JSONArray jArrayProfesores) {
-        ArrayList<Profesor> profesores = controladorProfesor.getProfesores();
+        List<Profesor> profesores = controladorProfesor.getProfesores();
         for (Profesor profesor : profesores) {
             JSONObject jObjectProfesor = new JSONObject();
             jObjectProfesor.put(LOGIN, profesor.getLogin());

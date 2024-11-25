@@ -27,8 +27,9 @@ class HU30X {
         // Configuración inicial antes de cada prueba
         profesorCtrl = new ControladorProfesor();
         estudianteCtrl = new ControladorEstudiante();
-        lpCtrl = new ControladorLearningPath();
         actividadCtrl = new ControladorActividad();
+        lpCtrl = new ControladorLearningPath(actividadCtrl);
+        
         registroCtrl = new ControladorRegistros();
 
         // Crear Learning Path y actividades

@@ -23,7 +23,6 @@ import java.util.Set;
 
 public class PersistenciaLearningPaths {
 
-    private static final String PATH = "learningPaths.json";
 
     private static final String TITULO = "titulo";
     private static final String DESCRIPCION_GENERAL = "descripcionGeneral";
@@ -36,13 +35,13 @@ public class PersistenciaLearningPaths {
     private static final String LOGIN_CREADOR = "loginCreador";
     private static final String ID = "id";
 
-    public void cargarLearningPaths(String path, ControladorLearningPath controlador, ControladorActividad controladorActividades) throws IOException {
+    public  void cargarLearningPaths(String path, ControladorLearningPath controlador, ControladorActividad controladorActividades) throws IOException {
         String jsonCompleto = new String(Files.readAllBytes(new File(path).toPath()));
         JSONArray json = new JSONArray(jsonCompleto);
         loadLearningPaths(controlador, json, controladorActividades);
     }
 
-    public void guardarLearningPaths(String path, ControladorLearningPath controlador,  ControladorActividad controladorActividades) throws IOException {
+    public  void guardarLearningPaths(String path, ControladorLearningPath controlador,  ControladorActividad controladorActividades) throws IOException {
         JSONArray json = new JSONArray();
         saveLearningPaths(controlador, json);
         PrintWriter pw = new PrintWriter(path);
@@ -50,7 +49,7 @@ public class PersistenciaLearningPaths {
         pw.close();
     }
 
-    private void saveLearningPaths(ControladorLearningPath controlador, JSONArray jArrayLearningPaths) {
+    private  void saveLearningPaths(ControladorLearningPath controlador, JSONArray jArrayLearningPaths) {
         Collection<LearningPath> learningPaths = controlador.getLearningPaths();
         for (LearningPath learningPath : learningPaths) {
             JSONObject jLearningPath = new JSONObject();
@@ -60,7 +59,7 @@ public class PersistenciaLearningPaths {
 
     }
 
-    private List<LearningPath> loadLearningPaths(ControladorLearningPath controlador, JSONArray jArrayLearningPaths, ControladorActividad controladorActividades) {
+    private   List<LearningPath> loadLearningPaths(ControladorLearningPath controlador, JSONArray jArrayLearningPaths, ControladorActividad controladorActividades) {
         // TODO Auto-generated method stub
 
         List<LearningPath> learningPaths = new ArrayList<>();
@@ -74,7 +73,7 @@ public class PersistenciaLearningPaths {
         return learningPaths;
     }
 
-    private void saveLP(LearningPath learningPath, JSONObject jLearningPath) {
+    private  void saveLP(LearningPath learningPath, JSONObject jLearningPath) {
         jLearningPath.put(TITULO, learningPath.getTitulo());
         jLearningPath.put(DESCRIPCION_GENERAL, learningPath.getDescripcionGeneral());
         jLearningPath.put(NIVEL_DIFICULTAD, learningPath.getNivelDificultad());
@@ -103,7 +102,7 @@ public class PersistenciaLearningPaths {
         return learningPath;
     }
 
-    private void saveLPActivities(LearningPath learningPath, JSONArray jArrayActivities) {
+    private  void saveLPActivities(LearningPath learningPath, JSONArray jArrayActivities) {
         Set<Entry<Actividad, Boolean>> activities = learningPath.getActividades().entrySet();
         JSONObject jActivity = new JSONObject();
         for (Entry<Actividad, Boolean> entry : activities) {
@@ -113,7 +112,7 @@ public class PersistenciaLearningPaths {
         }
     }
 
-    private void loadLPActivities(LearningPath learningPath, JSONArray jArrayActivities, ControladorActividad controladorActividad) {
+    private  void loadLPActivities(LearningPath learningPath, JSONArray jArrayActivities, ControladorActividad controladorActividad) {
 
         HashMap<Actividad, Boolean> actividades = new HashMap<>();
 

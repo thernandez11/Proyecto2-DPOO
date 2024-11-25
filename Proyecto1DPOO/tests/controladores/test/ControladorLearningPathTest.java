@@ -9,17 +9,20 @@ import java.util.*;
 
 import componentes.Actividad;
 import componentes.LearningPath;
+import controladores.ControladorActividad;
 import controladores.ControladorLearningPath;
 
 class ControladorLearningPathTest {
 
     private ControladorLearningPath controlador;
+    private ControladorActividad AC;
     private final String testFilename = "Persistencia/test_lp_data.txt";
 
     @BeforeEach
     void setUp() {
         // Configuración inicial antes de cada prueba
-        controlador = new ControladorLearningPath();
+    	AC = new ControladorActividad();
+        controlador = new ControladorLearningPath(AC);
     }
 
     @AfterEach

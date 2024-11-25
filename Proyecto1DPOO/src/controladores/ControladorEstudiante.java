@@ -1,12 +1,14 @@
 package controladores;
 
 import java.io.*;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import componentes.Estudiante;
+import persistencia.PersistenciaEstudiantes;
 
 public class ControladorEstudiante {
 
@@ -18,12 +20,12 @@ public class ControladorEstudiante {
 	
 	public void crearEstudiante(String login, String password) {
 		Estudiante e = new Estudiante(login, password);
-		estudiantes.put(e.getLogin(), e);
+        estudiantes.put(e.getLogin(), e);
 	}
 	
 	public void mostrarEstudiantes() {
 		Set<String> logins = estudiantes.keySet();
-		Collection<Estudiante> passwords = estudiantes.values();
+ 		Collection<Estudiante> passwords = estudiantes.values();
 		for (String login : logins) {
 			System.out.println(login);
 		}
@@ -45,7 +47,7 @@ public class ControladorEstudiante {
 	}
 	
     public void guardarEstudiantesEnArchivo(String nombreArchivo) throws IOException {
-        String directorioRelativo = "Persistencia"; 
+        String directorioRelativo = "datos"; 
         File directorio = new File(directorioRelativo);
         
         // Asegúrate de que el directorio existe
@@ -55,45 +57,26 @@ public class ControladorEstudiante {
 
         // Crea el archivo en la ruta deseada con el nombre proporcionado
         File archivo = new File(directorio, nombreArchivo); // Ahora usa el nombre del archivo proporcionado
-
-        try (PrintWriter writer = new PrintWriter(new FileWriter(archivo, true))) { // Modo apéndice
-            // Guarda todos los estudiantes en el archivo
-            for (Estudiante estudiante : estudiantes.values()) {
-                writer.println(estudiante.getLogin() + "," + estudiante.getPassword()); // Guarda como login,password
-            }
-            System.out.println("Datos guardados exitosamente en " + archivo.getAbsolutePath());
-        } catch (IOException e) {
-            System.err.println("Error al guardar los datos: " + e.getMessage());
-            throw e;
-        }
+        PersistenciaEstudiantes.guardarEstudiantes(archivo.getAbsolutePath(), this);
+        
     }
 
     // Cargar estudiantes desde un archivo
     public void cargarEstudiantesDesdeArchivo(String nombreArchivo) throws IOException {
         // Inicializar estudiantes si no está inicializado
-        if (estudiantes == null) {
-            estudiantes = new HashMap<>();
+        String directorioRelativo = "datos"; 
+        File directorio = new File(directorioRelativo);
+        
+        // Asegúrate de que el directorio existe
+        if (!directorio.exists()) {
+            directorio.mkdirs(); // Crea el directorio si no existe
         }
+		File archivo = new File(directorio, nombreArchivo);
 
-        String directorioRelativo = "Persistencia"; // Asegúrate de que este directorio sea correcto
-        File archivo = new File(directorioRelativo, nombreArchivo);
+        PersistenciaEstudiantes.cargarEstudiantes(archivo.getAbsolutePath(), this);
+    }
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] partes = line.split(","); // Divide el login y la contraseña
-                if (partes.length == 2) {
-                    String login = partes[0];
-                    String password = partes[1];
-                    estudiantes.put(login, new Estudiante(login, password)); // Crea un nuevo estudiante
-                }
-            }
-            System.out.println("Datos cargados exitosamente desde " + archivo.getAbsolutePath() + ". Total de estudiantes: " + estudiantes.size());
-        } catch (FileNotFoundException e) {
-            System.out.println("El archivo no existe. Se creará al cerrar la aplicacion.");
-        } catch (IOException e) {
-            System.err.println("Error al cargar los datos: " + e.getMessage());
-            throw e; // Propagar la excepción para manejarla más arriba si es necesario
-        }
+    public List<Estudiante> getEstudiantes() {
+        return new ArrayList<>(estudiantes.values());
     }
 }

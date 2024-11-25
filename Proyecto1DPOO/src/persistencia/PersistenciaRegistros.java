@@ -15,12 +15,12 @@ import org.json.JSONObject;
 import componentes.RegistroLearningPath;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 public class PersistenciaRegistros {
 
 
-    private static final String NOMBRE_ARCHIVO = "registros.json";
     private static final String FECHA_INICIO = "fechaInicio";
     private static final String FECHA_FIN = "fechaFin";
     private static final String ESTADO = "estado";
@@ -37,7 +37,7 @@ public class PersistenciaRegistros {
     public void cargarRegistros(String path, ControladorRegistros controlador, ControladorActividad controladorActividades) throws IOException {
         String jsonCompleto = new String(Files.readAllBytes(new File(path).toPath()));
         JSONArray json = new JSONArray(jsonCompleto);
-        loadRegistros(controlador, json, controladorActividades);
+        chargeRegistros(controlador, json);
     }
 
     public void guardarRegistros(String path, ControladorRegistros controlador) throws IOException {
@@ -62,6 +62,7 @@ public class PersistenciaRegistros {
             jObjectRegistro.put("registrosLp", jArrayRegistrosLp);
         }
 
+        jArrayRegistros.put(jObjectRegistro);
 
     }
 
@@ -98,18 +99,18 @@ public class PersistenciaRegistros {
             String loginEstudiante = jObjectRegistroLp.getString(LOGIN_ESTUDIANTE);
             LocalDateTime fechaInscrito = LocalDateTime.parse(jObjectRegistroLp.getString(FECHA_INSCRITO));
             RegistroLearningPath registroLearningPath = new RegistroLearningPath(loginEstudiante, fechaInscrito);
-
+    
             registrosLp.add(registroLearningPath);
-
+    
             if (!jObjectRegistroLp.getString(FECHA_TERMINADO).isEmpty()) {
                 registroLearningPath.setFechaTerminado(LocalDateTime.parse(jObjectRegistroLp.getString(FECHA_TERMINADO)));
             }
-
+    
             if (!jObjectRegistroLp.getString(ESTADO_LP).isEmpty()) {
                 registroLearningPath.setEstado(jObjectRegistroLp.getString(ESTADO_LP));
             }
-
-            if (!jObjectRegistroLp.getJSONArray(REGISTROS_A).length() == 0) {
+    
+            if (jObjectRegistroLp.getJSONArray(REGISTROS_A).length() != 0) {
                 JSONArray jArrayRegistrosA = jObjectRegistroLp.getJSONArray(REGISTROS_A);
                 ArrayList<RegistroActividad> registrosA = new ArrayList<>();
                 chargeRegistersA(registrosA, jArrayRegistrosA);
@@ -120,7 +121,7 @@ public class PersistenciaRegistros {
    
 
 
-    private void saveRegistersA(ArrayList<RegistroActividad> registrosA, JSONArray jArrayRegistrosA) {
+    private void saveRegistersA(List<RegistroActividad> registrosA, JSONArray jArrayRegistrosA) {
         JSONObject jObjectRegistroA = new JSONObject();
         for (RegistroActividad registroActividad : registrosA) {
             jObjectRegistroA.put(FECHA_INICIO, registroActividad.getFechaInicio().toString());
@@ -159,7 +160,7 @@ public class PersistenciaRegistros {
                 registroActividad.setNota(jObjectRegistroA.getInt(NOTA));
             }
 
-            if (!jObjectRegistroA.getJSONObject(RESPUESTAS).length() == 0) {
+            if (jObjectRegistroA.getJSONObject(RESPUESTAS).length() > 0) {
                 JSONObject jObjectRespuestas = jObjectRegistroA.getJSONObject(RESPUESTAS);
                 HashMap<String, String> respuestas = new HashMap<>();
                 chargeRespuestas(respuestas, jObjectRespuestas);
@@ -185,6 +186,8 @@ public class PersistenciaRegistros {
             respuestas.put(key, jObjectRespuestas.getString(key));
         }
     }
+
+
 
 
 

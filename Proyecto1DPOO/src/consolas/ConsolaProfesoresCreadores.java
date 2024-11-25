@@ -21,7 +21,7 @@ public class ConsolaProfesoresCreadores {
 	public ConsolaProfesoresCreadores() {
 		this.AC = new ControladorActividad();
         this.EC = new ControladorEstudiante();
-        this.LPC = new ControladorLearningPath();
+        this.LPC = new ControladorLearningPath(AC);
         this.PC = new ControladorProfesor();
         this.RC = new ControladorResena();
         this.input = new Scanner(System.in);

@@ -30,7 +30,6 @@ import java.util.Set;
 public class PersistenciaActividades {
 
     
-    private static final String NOMBRE_ARCHIVO = "actividades.json";
 
     private static final String LOGIN_CREADOR = "loginCreador";
     private static final String ID = "id";
@@ -46,12 +45,12 @@ public class PersistenciaActividades {
     private static final String PREGUNTAS = "preguntas";
     private static final String NOTA_MINIMA = "notaMinima";
     
-    public void cargarActividades(String archivo, ControladorActividad controladorActividad) throws  IOException{
+    public static void cargarActividades(String archivo, ControladorActividad controladorActividad) throws  IOException{
         String jsonCompleto = new String(Files.readAllBytes(new File(archivo).toPath()));
         JSONArray json = new JSONArray(jsonCompleto);
         chargeActivities(controladorActividad, json);
     }
-    public void guardarActividades(String archivo, ControladorActividad controladorActividad) throws  IOException{
+    public static void guardarActividades(String archivo, ControladorActividad controladorActividad) throws  IOException{
 
         JSONArray jsonArray = new JSONArray();
 
@@ -63,7 +62,7 @@ public class PersistenciaActividades {
 
     }
 
-    private void saveActivities(ControladorActividad controladorActividad, JSONArray jArray)
+    private static void saveActivities(ControladorActividad controladorActividad, JSONArray jArray)
 
     {
         
@@ -111,17 +110,18 @@ public class PersistenciaActividades {
 
     }
 
-    private void chargeActivities(ControladorActividad controladorActividad, JSONArray jActividades) throws IOException {
+    private static void chargeActivities(ControladorActividad controladorActividad, JSONArray jActividades) throws IOException {
 
         HashMap<Integer, Actividad> controladorActividades = controladorActividad.actividades;
 
         HashMap<Integer, List<Integer>> actividadesPrevias = new HashMap<>();
         HashMap<Integer, List<Integer>> actividadesSiguientes = new HashMap<>();
         
-        int amountActivities = jActividades.lenght();
+        int amountActivities = jActividades.length();
         for (int index = 0; index < amountActivities; index++) {
             JSONObject jActividad = jActividades.getJSONObject(index);
-            Actividad actividad = new Actividad(jActividad.getString(ID), jActividad.getString(LOGIN_CREADOR));
+            String loginCreador = jActividad.getString(LOGIN_CREADOR);
+            Actividad actividad = new Actividad(Integer.parseInt(ID), loginCreador);
             actividad.setTipo(jActividad.getString(TIPO));
             actividad.setDescripcion(jActividad.getString(DESCRIPCION));
             JSONArray jObjetivos = jActividad.getJSONArray(OBJETIVOS);
@@ -136,11 +136,11 @@ public class PersistenciaActividades {
             actividadesPrevias.put(actividad.getId(), new ArrayList<>());
             actividadesSiguientes.put(actividad.getId(), new ArrayList<>());
             JSONArray jActividadesPrevias = jActividad.getJSONArray(ACTIVIDADES_PREVIAS);
-            for (int i = 0; i < jActividadesPrevias.lenght(); i++) {
+            for (int i = 0; i < jActividadesPrevias.length(); i++) {
                 actividadesPrevias.get(actividad.getId()).add(jActividadesPrevias.getInt(i));
             }
             JSONArray jActividadesSiguientes = jActividad.getJSONArray(ACTIVIDADES_SIGUIENTES);
-            for (int i = 0; i < jActividadesSiguientes.lenght(); i++) {
+            for (int i = 0; i < jActividadesSiguientes.length(); i++) {
                 actividadesSiguientes.get(actividad.getId()).add(jActividadesSiguientes.getInt(i));
             }
 
@@ -159,7 +159,7 @@ public class PersistenciaActividades {
 
 
 
-    private void savePreviousActivities(Actividad actividad, JSONObject jActividad) {
+    private static  void savePreviousActivities(Actividad actividad, JSONObject jActividad) {
         JSONArray jActividadesPrevias = new JSONArray();
         for (Actividad actividadPrevia : actividad.getActividadesPrevias()) {
             jActividadesPrevias.put(actividadPrevia.getId());
@@ -167,7 +167,7 @@ public class PersistenciaActividades {
         jActividad.put(ACTIVIDADES_PREVIAS, jActividadesPrevias);
     }
 
-    private void chargePreviousActivities(Map<Integer, List<Integer>> actividadesPrevias, Map<Integer, Actividad> controladorActividades) {
+    private static void chargePreviousActivities(Map<Integer, List<Integer>> actividadesPrevias, Map<Integer, Actividad> controladorActividades) {
         
         Set<Integer> ids = actividadesPrevias.keySet();
 
@@ -187,7 +187,7 @@ public class PersistenciaActividades {
     }
 
 
-    private void saveNextActivities(Actividad actividad, JSONObject jActividad) {
+    private static void saveNextActivities(Actividad actividad, JSONObject jActividad) {
         JSONArray jActividadesSiguientes = new JSONArray();
         for (Actividad actividadSiguiente : actividad.getActividadesSeguimiento()) {
             jActividadesSiguientes.put(actividadSiguiente.getId());
@@ -195,7 +195,7 @@ public class PersistenciaActividades {
         jActividad.put(ACTIVIDADES_SIGUIENTES, jActividadesSiguientes);
     }
 
-    private void chargeNextActivities(Map<Integer, List<Integer>> actividadesSiguientes, Map<Integer, Actividad> controladorActividades) {
+    private static void chargeNextActivities(Map<Integer, List<Integer>> actividadesSiguientes, Map<Integer, Actividad> controladorActividades) {
         
         Set<Integer> ids = actividadesSiguientes.keySet();
 
@@ -214,7 +214,7 @@ public class PersistenciaActividades {
 
     }
 
-    private void saveQuestion(Pregunta pregunta, JSONObject jPregunta){
+    private static void saveQuestion(Pregunta pregunta, JSONObject jPregunta){
 
         jPregunta.put("textoPregunta", pregunta.getTextoPregunta());
 
@@ -247,9 +247,9 @@ public class PersistenciaActividades {
 
     }
 
-    private void chargeQuestion(JSONArray jPreguntas, Actividad actividad) {
+    private static void chargeQuestion(JSONArray jPreguntas, Actividad actividad) {
         
-        int amountQuestions = jPreguntas.lenght();
+        int amountQuestions = jPreguntas.length();
         List<PreguntaMultiple> preguntasMultiples = new ArrayList<>();
         List<PreguntaVerdaderoFalso> preguntasVerdaderoFalso = new ArrayList<>();
         List<PreguntaAbierta> preguntasAbiertas = new ArrayList<>();
@@ -268,7 +268,7 @@ public class PersistenciaActividades {
                         PreguntaMultiple preguntaMultiple = new PreguntaMultiple(jPregunta.getString("textoPregunta"), new ArrayList<Opcion>());
                         JSONArray jOpciones = jPregunta.getJSONArray("opciones");
                         List<Opcion> opciones = new ArrayList<>();
-                        for (int i = 0; i < jOpciones.lenght(); i++) {
+                        for (int i = 0; i < jOpciones.length(); i++) {
                             JSONObject jOpcion = jOpciones.getJSONObject(i);
                             Opcion opcion = new Opcion(jOpcion.getString("textoOpcion"), jOpcion.getString("explicacion"), jOpcion.getBoolean("correcta"));
                             opciones.add(opcion);
@@ -279,7 +279,7 @@ public class PersistenciaActividades {
                         PreguntaVerdaderoFalso preguntaVerdaderoFalso = new PreguntaVerdaderoFalso(jPregunta.getString("textoPregunta"), new ArrayList<Opcion>());
                         JSONArray jOpciones = jPregunta.getJSONArray("opciones");
                         List<Opcion> opciones = new ArrayList<>();
-                        for (int i = 0; i < jOpciones.lenght(); i++) {
+                        for (int i = 0; i < jOpciones.length(); i++) {
                             JSONObject jOpcion = jOpciones.getJSONObject(i);
                             Opcion opcion = new Opcion(jOpcion.getString("textoOpcion"), jOpcion.getString("explicacion"), jOpcion.getBoolean("correcta"));
                             opciones.add(opcion);

@@ -1,21 +1,25 @@
 package controladores;
 
+import componentes.Actividad;
+import componentes.LearningPath;
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
-import java.time.LocalDateTime;
-
-import componentes.Actividad;
-import componentes.LearningPath;
+import persistencia.PersistenciaLearningPaths;
 
 public class ControladorLearningPath {
 
 	HashMap<Integer, LearningPath> learningPaths;
+	PersistenciaLearningPaths persistenciaLearningPaths;
+	ControladorActividad controladorActividades;
 	
-	public ControladorLearningPath() {
+	public ControladorLearningPath(ControladorActividad controladorActividades) {
 	    this.learningPaths = new HashMap<>();
+		this.persistenciaLearningPaths = new PersistenciaLearningPaths();
+		this.controladorActividades = controladorActividades;
 	}
 	
 	//Consultar informacion learningPaths
@@ -118,30 +122,8 @@ public class ControladorLearningPath {
         String directorioRelativo = "Persistencia"; 
         File archivo = new File(directorioRelativo, nombreArchivo);
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parte = line.split(","); 
-                if (parte.length == 2) {
-                    String titulo = parte[0];
-                    String descripcion = parte[1];
-                    String dificultad = parte[2];
-                    Integer duracion = Integer.parseInt(parte[3]);
-                    LocalDateTime fechaCreacion = LocalDateTime.parse(parte[4]);
-                    LocalDateTime fechaModificacion = LocalDateTime.parse(parte[5]);
-                    Integer version = Integer.parseInt(parte[6]);
-                    String Actividades= parte[7];
-                    String logInCreador = parte[8];
-                    learningPaths.put(learningPaths.size() + 1, new LearningPath(version, logInCreador, version, fechaCreacion, fechaModificacion));
-                }
-            }
-            System.out.println("Datos cargados exitosamente desde " + archivo.getAbsolutePath() + ". Total de estudiantes: " + learningPaths.size());
-        } catch (FileNotFoundException e) {
-            System.out.println("El archivo no existe. Se creará al cerrar la aplicacion.");
-        } catch (IOException e) {
-            System.err.println("Error al cargar los datos: " + e.getMessage());
-            throw e;
-        }
+        
+        persistenciaLearningPaths.cargarLearningPaths(nombreArchivo, this, controladorActividades);
     }
 	
 }

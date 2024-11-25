@@ -1,6 +1,8 @@
 package controladores;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,13 +16,16 @@ import componentes.Opcion;
 import componentes.PreguntaAbierta;
 import componentes.PreguntaMultiple;
 import componentes.PreguntaVerdaderoFalso;
+import persistencia.PersistenciaActividades;
 
 public class ControladorActividad {
 	
-	HashMap<Integer, Actividad> actividades;
+	public HashMap<Integer, Actividad> actividades;
+	private PersistenciaActividades persistenciaActividades;
 	
 	public ControladorActividad() {
 	    this.actividades = new HashMap<>();
+		this.persistenciaActividades = new PersistenciaActividades();
 	}
 	
 	//Consultar informacion actividades
@@ -165,6 +170,34 @@ public class ControladorActividad {
 			preguntasVerdaderoFalso.add(preguntaVerdaderoFalso);
 		}
 		return preguntasVerdaderoFalso;
+	}
+
+
+	public void guardarActividadesEnArchivo(String nombreArchivo) throws IOException {
+		String directorioRelativo = "datos";
+		File directorio = new File(directorioRelativo);
+
+		if (!directorio.exists()) {
+			directorio.mkdir();
+		}
+
+		File archivo = new File(directorio, nombreArchivo);
+
+		PersistenciaActividades.guardarActividades(archivo.getAbsolutePath(), this);
+
+	}
+
+	public void cargarActividadesDesdeArchivo(String nombreArchivo) throws IOException {
+		String directorioRelativo = "datos";
+		File directorio = new File(directorioRelativo);
+
+		if (!directorio.exists()) {
+			directorio.mkdir();
+		}
+
+		File archivo = new File(directorio, nombreArchivo);
+
+		PersistenciaActividades.cargarActividades(archivo.getAbsolutePath() , this);
 	}
 	
 }

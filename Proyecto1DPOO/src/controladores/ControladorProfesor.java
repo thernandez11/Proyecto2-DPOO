@@ -4,6 +4,7 @@ import componentes.Profesor;
 import java.io.*;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 public class ControladorProfesor {
@@ -90,6 +91,10 @@ public class ControladorProfesor {
             System.err.println("Error al cargar los datos: " + e.getMessage());
             throw e;
         }
+    }
+
+    public List<Profesor> getProfesores() {
+        return (List<Profesor>) profesores.values();
     }
 
 }
