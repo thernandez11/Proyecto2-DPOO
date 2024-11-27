@@ -22,6 +22,9 @@ public class PersistenciaProfesores {
     public static void cargarProfesores(String RUTA_ARCHIVO, ControladorProfesor controladorProfesor) throws IOException {
         String jsonCompleto  = new String(Files.readAllBytes(new File(RUTA_ARCHIVO).toPath()));
         JSONArray json = new JSONArray(jsonCompleto);
+        if (json.length() == 0) {
+            return;
+        }
         loadProfesores(controladorProfesor, json);
 
     }
@@ -35,7 +38,7 @@ public class PersistenciaProfesores {
     }
 
     private static void saveProfesores(ControladorProfesor controladorProfesor, JSONArray jArrayProfesores) {
-        List<Profesor> profesores = controladorProfesor.getProfesores();
+        Collection<Profesor> profesores = controladorProfesor.getProfesores();
         for (Profesor profesor : profesores) {
             JSONObject jObjectProfesor = new JSONObject();
             jObjectProfesor.put(LOGIN, profesor.getLogin());

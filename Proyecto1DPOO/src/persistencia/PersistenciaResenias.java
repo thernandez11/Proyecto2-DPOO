@@ -23,8 +23,11 @@ public class PersistenciaResenias {
     public static void cargarResenias(String RUTA_ARCHIVO, ControladorResena controladorResena) throws IOException {
 
         String jsonCompleto = new String(Files.readAllBytes(new File(RUTA_ARCHIVO).toPath()));
-        // Comentario
+
         JSONArray json = new JSONArray(jsonCompleto);
+        if (json.length() == 0) {
+            return;
+        }
         loadResenias(controladorResena, json); 
 
     }

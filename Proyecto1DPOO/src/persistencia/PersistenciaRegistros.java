@@ -34,13 +34,16 @@ public class PersistenciaRegistros {
     private static final String ESTADO_LP = "estadoLP";
     private static final String REGISTROS_A = "registrosA";
 
-    public void cargarRegistros(String path, ControladorRegistros controlador, ControladorActividad controladorActividades) throws IOException {
+    public static void cargarRegistros(String path, ControladorRegistros controlador) throws IOException {
         String jsonCompleto = new String(Files.readAllBytes(new File(path).toPath()));
         JSONArray json = new JSONArray(jsonCompleto);
+        if (json.length() == 0) {
+            return;
+        }
         chargeRegistros(controlador, json);
     }
 
-    public void guardarRegistros(String path, ControladorRegistros controlador) throws IOException {
+    public static void guardarRegistros(String path, ControladorRegistros controlador) throws IOException {
         JSONArray json = new JSONArray();
         saveRegistros(controlador, json);
         PrintWriter pw = new PrintWriter(path);
@@ -48,7 +51,7 @@ public class PersistenciaRegistros {
         pw.close();
     }
 
-    private void saveRegistros(ControladorRegistros controlador, JSONArray jArrayRegistros) { 
+    private static void saveRegistros(ControladorRegistros controlador, JSONArray jArrayRegistros) { 
         
         HashMap<Integer, ArrayList<RegistroLearningPath>> registros = controlador.getRegistrosLp();
         Set<Integer> keys = registros.keySet();
@@ -66,7 +69,7 @@ public class PersistenciaRegistros {
 
     }
 
-    private void chargeRegistros(ControladorRegistros controlador, JSONArray jArrayRegistros) {
+    private static void chargeRegistros(ControladorRegistros controlador, JSONArray jArrayRegistros) {
         for (int i = 0; i < jArrayRegistros.length(); i++) {
             JSONObject jObjectRegistro = jArrayRegistros.getJSONObject(i);
             int id = jObjectRegistro.getInt("id");
@@ -80,7 +83,7 @@ public class PersistenciaRegistros {
 
 
 
-    private void saveLPRegisters(ArrayList<RegistroLearningPath> registrosLp, JSONArray jArrayRegistrosLp) {
+    private static void saveLPRegisters(ArrayList<RegistroLearningPath> registrosLp, JSONArray jArrayRegistrosLp) {
         JSONObject jObjectRegistroLp = new JSONObject();
         for (RegistroLearningPath registroLearningPath : registrosLp) {
             jObjectRegistroLp.put(LOGIN_ESTUDIANTE, registroLearningPath.getLoginEstudiante());
@@ -93,7 +96,7 @@ public class PersistenciaRegistros {
             jArrayRegistrosLp.put(jObjectRegistroLp);
         }
     }
-    private void chargeLPRegisters(ArrayList<RegistroLearningPath> registrosLp, JSONArray jArrayRegistrosLp) {
+    private static void chargeLPRegisters(ArrayList<RegistroLearningPath> registrosLp, JSONArray jArrayRegistrosLp) {
         for (int i = 0; i < jArrayRegistrosLp.length(); i++) {
             JSONObject jObjectRegistroLp = jArrayRegistrosLp.getJSONObject(i);
             String loginEstudiante = jObjectRegistroLp.getString(LOGIN_ESTUDIANTE);
@@ -121,7 +124,7 @@ public class PersistenciaRegistros {
    
 
 
-    private void saveRegistersA(List<RegistroActividad> registrosA, JSONArray jArrayRegistrosA) {
+    private static void saveRegistersA(List<RegistroActividad> registrosA, JSONArray jArrayRegistrosA) {
         JSONObject jObjectRegistroA = new JSONObject();
         for (RegistroActividad registroActividad : registrosA) {
             jObjectRegistroA.put(FECHA_INICIO, registroActividad.getFechaInicio().toString());
@@ -136,7 +139,7 @@ public class PersistenciaRegistros {
         }
     }
 
-    private void chargeRegistersA(ArrayList<RegistroActividad> registrosA, JSONArray jArrayRegistrosA) {
+    private static void chargeRegistersA(ArrayList<RegistroActividad> registrosA, JSONArray jArrayRegistrosA) {
         for (int i = 0; i < jArrayRegistrosA.length(); i++) {
             JSONObject jObjectRegistroA = jArrayRegistrosA.getJSONObject(i);
             int idActividad = jObjectRegistroA.getInt("idActividad");
@@ -171,7 +174,7 @@ public class PersistenciaRegistros {
         }
     }
     
-    private void saveRespuestas(HashMap<String, String> respuestas, JSONObject jObjectRespuestas) {
+    private static void saveRespuestas(HashMap<String, String> respuestas, JSONObject jObjectRespuestas) {
 
         Set<String> keys = respuestas.keySet();
         for (String key : keys) {
@@ -180,7 +183,7 @@ public class PersistenciaRegistros {
 
     }
 
-    private void chargeRespuestas(HashMap<String, String> respuestas, JSONObject jObjectRespuestas) {
+    private static void chargeRespuestas(HashMap<String, String> respuestas, JSONObject jObjectRespuestas) {
         Set<String> keys = jObjectRespuestas.keySet();
         for (String key : keys) {
             respuestas.put(key, jObjectRespuestas.getString(key));

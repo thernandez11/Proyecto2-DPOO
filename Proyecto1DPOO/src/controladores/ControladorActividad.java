@@ -1,21 +1,20 @@
 package controladores;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.Arrays;
-import java.util.Collection;
-
 import componentes.Actividad;
 import componentes.Opcion;
 import componentes.PreguntaAbierta;
 import componentes.PreguntaMultiple;
 import componentes.PreguntaVerdaderoFalso;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 import persistencia.PersistenciaActividades;
 
 public class ControladorActividad {
@@ -180,12 +179,13 @@ public class ControladorActividad {
 		if (!directorio.exists()) {
 			directorio.mkdir();
 		}
-
 		File archivo = new File(directorio, nombreArchivo);
 
 		PersistenciaActividades.guardarActividades(archivo.getAbsolutePath(), this);
 
 	}
+
+	
 
 	public void cargarActividadesDesdeArchivo(String nombreArchivo) throws IOException {
 		String directorioRelativo = "datos";
@@ -195,9 +195,19 @@ public class ControladorActividad {
 			directorio.mkdir();
 		}
 
+
+
 		File archivo = new File(directorio, nombreArchivo);
 
-		PersistenciaActividades.cargarActividades(archivo.getAbsolutePath() , this);
+		if (!archivo.exists()) {
+			archivo.createNewFile();
+			System.out.println("No existe el archivo" + nombreArchivo + " se ha creado uno nuevo");
+		}
+		else {
+			PersistenciaActividades.cargarActividades(archivo.getAbsolutePath() , this);
+		}
+
 	}
 	
 }
+

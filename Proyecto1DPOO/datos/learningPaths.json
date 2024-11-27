@@ -1,0 +1,15 @@
+[{
+  "descripcionGeneral": "DESCRIPCION",
+  "loginCreador": "admin",
+  "fechaModificacion": "2024-11-26T18:05:42.771264482",
+  "nivelDificultad": "3",
+  "titulo": "LP",
+  "duracion": 20,
+  "fechaCreacion": "2024-11-26T18:05:42.771264482",
+  "id": 1,
+  "actividades": [{
+    "obligatoria": true,
+    "id": 1
+  }],
+  "version": 0
+}]

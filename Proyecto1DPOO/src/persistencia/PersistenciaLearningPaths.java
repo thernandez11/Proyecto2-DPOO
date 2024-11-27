@@ -38,6 +38,9 @@ public class PersistenciaLearningPaths {
     public  void cargarLearningPaths(String path, ControladorLearningPath controlador, ControladorActividad controladorActividades) throws IOException {
         String jsonCompleto = new String(Files.readAllBytes(new File(path).toPath()));
         JSONArray json = new JSONArray(jsonCompleto);
+        if (json.length() == 0) {
+            return;
+        }
         loadLearningPaths(controlador, json, controladorActividades);
     }
 
@@ -59,18 +62,17 @@ public class PersistenciaLearningPaths {
 
     }
 
-    private   List<LearningPath> loadLearningPaths(ControladorLearningPath controlador, JSONArray jArrayLearningPaths, ControladorActividad controladorActividades) {
+    private  void loadLearningPaths(ControladorLearningPath controlador, JSONArray jArrayLearningPaths, ControladorActividad controladorActividades) {
         // TODO Auto-generated method stub
 
-        List<LearningPath> learningPaths = new ArrayList<>();
 
         for (int i = 0; i < jArrayLearningPaths.length(); i++) {
             JSONObject jLearningPath = jArrayLearningPaths.getJSONObject(i);
             LearningPath learningPath = loadLP(jLearningPath, controladorActividades);
-            learningPaths.add(learningPath);
+            controlador.addLearningPath(learningPath);
         }
 
-        return learningPaths;
+        
     }
 
     private  void saveLP(LearningPath learningPath, JSONObject jLearningPath) {
@@ -129,3 +131,4 @@ public class PersistenciaLearningPaths {
 
 
 }
+

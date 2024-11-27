@@ -59,6 +59,10 @@ public class ControladorLearningPath {
 		learningPaths.put(id, lp);
 		return id;
 	}
+
+	public void addLearningPath(LearningPath lp) {
+		learningPaths.put(lp.getId(), lp);
+	}
 	
 	//Editar atributos learning path
 	public void editarTitulo(int id, String titulo) {
@@ -93,7 +97,7 @@ public class ControladorLearningPath {
 		
 	//Persistencia learning paths
 	public void guardarLPEnArchivo(String nombreArchivo) throws IOException {
-        String directorioRelativo = "Persistencia"; 
+        String directorioRelativo = "datos"; 
         File directorio = new File(directorioRelativo);
         
         if (!directorio.exists()) {
@@ -102,28 +106,31 @@ public class ControladorLearningPath {
 
         File archivo = new File(directorio, nombreArchivo); 
 
-        try (PrintWriter writer = new PrintWriter(new FileWriter(archivo, true))) { 
-            for (LearningPath learningPath : learningPaths.values()) {
-                writer.println(learningPath.getTitulo() + "," + learningPath.getDescripcionGeneral() + "," + learningPath.getNivelDificultad()+ "," + 
-                				learningPath.getDuracion()+ "," + learningPath.getFechaCreacion()+ "," + learningPath.getFechaModificacion()+ "," + 
-                				learningPath.getVersion() + "," + learningPath.getActividades() + "," + learningPath.getLoginCreador() ); // Guarda como login,password
-            }
-            System.out.println("Datos guardados exitosamente en " + archivo.getAbsolutePath());
-        } catch (IOException e) {
-            System.err.println("Error al guardar los datos: " + e.getMessage());
-            throw e;
-        }
+        persistenciaLearningPaths.guardarLearningPaths(archivo.getAbsolutePath(), this, controladorActividades);
     }
+
+	
+
     public void cargarLPDesdeArchivo(String nombreArchivo) throws IOException {
         if (learningPaths == null) {
         	learningPaths = new HashMap<>();
         }
 
-        String directorioRelativo = "Persistencia"; 
-        File archivo = new File(directorioRelativo, nombreArchivo);
+        String directorioRelativo = "datos";
+        File directorio = new File(directorioRelativo);
 
-        
-        persistenciaLearningPaths.cargarLearningPaths(nombreArchivo, this, controladorActividades);
+        if (!directorio.exists()) {
+            directorio.mkdir();
+        }
+
+        File archivo = new File(directorio, nombreArchivo);
+
+        if (!archivo.exists()) {
+            archivo.createNewFile();
+            System.out.println("No existe el archivo " + nombreArchivo + ". Se ha creado uno nuevo");
+        } else {
+            persistenciaLearningPaths.cargarLearningPaths(archivo.getAbsolutePath(), this, controladorActividades);
+        }
     }
 	
 }

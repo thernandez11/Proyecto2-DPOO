@@ -1,13 +1,12 @@
 package controladores;
 
+import componentes.Estudiante;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-
-import componentes.Estudiante;
 import persistencia.PersistenciaEstudiantes;
 
 public class ControladorEstudiante {
@@ -47,33 +46,35 @@ public class ControladorEstudiante {
 	}
 	
     public void guardarEstudiantesEnArchivo(String nombreArchivo) throws IOException {
-        String directorioRelativo = "datos"; 
+        String directorioRelativo = "datos";
         File directorio = new File(directorioRelativo);
-        
-        // Asegúrate de que el directorio existe
+
         if (!directorio.exists()) {
-            directorio.mkdirs(); // Crea el directorio si no existe
+            directorio.mkdirs();
         }
 
-        // Crea el archivo en la ruta deseada con el nombre proporcionado
-        File archivo = new File(directorio, nombreArchivo); // Ahora usa el nombre del archivo proporcionado
+        File archivo = new File(directorio, nombreArchivo);
+
         PersistenciaEstudiantes.guardarEstudiantes(archivo.getAbsolutePath(), this);
-        
     }
 
     // Cargar estudiantes desde un archivo
     public void cargarEstudiantesDesdeArchivo(String nombreArchivo) throws IOException {
-        // Inicializar estudiantes si no está inicializado
-        String directorioRelativo = "datos"; 
+        String directorioRelativo = "datos";
         File directorio = new File(directorioRelativo);
-        
-        // Asegúrate de que el directorio existe
-        if (!directorio.exists()) {
-            directorio.mkdirs(); // Crea el directorio si no existe
-        }
-		File archivo = new File(directorio, nombreArchivo);
 
-        PersistenciaEstudiantes.cargarEstudiantes(archivo.getAbsolutePath(), this);
+        if (!directorio.exists()) {
+            directorio.mkdir();
+        }
+
+        File archivo = new File(directorio, nombreArchivo);
+
+        if (!archivo.exists()) {
+            archivo.createNewFile();
+            System.out.println("No existe el archivo " + nombreArchivo + ". Se ha creado uno nuevo");
+        } else {
+            PersistenciaEstudiantes.cargarEstudiantes(archivo.getAbsolutePath(), this);
+        }
     }
 
     public List<Estudiante> getEstudiantes() {

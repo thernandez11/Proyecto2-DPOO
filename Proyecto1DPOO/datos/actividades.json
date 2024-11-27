@@ -1,0 +1,15 @@
+[{
+  "descripcion": "Actividad1",
+  "actividadesPrevias": [],
+  "loginCreador": "admin",
+  "tipo": "Tarea",
+  "nivelDificultad": "3",
+  "objetivos": ["Objetivo1"],
+  "fechaLimite": "",
+  "actividadesSiguientes": [],
+  "duracion": 15,
+  "preguntas": [],
+  "id": 1,
+  "url": "",
+  "notaMinima": -1
+}]

@@ -1,0 +1,18 @@
+[
+  {
+    "password": "estudiante",
+    "login": "estudiante"
+  },
+  {
+    "password": "adminEstudiante",
+    "login": "adminEstudiante"
+  },
+  {
+    "password": "estudiante2",
+    "login": "estudiante2"
+  },
+  {
+    "password": "estudiante3",
+    "login": "estudiante3"
+  }
+]

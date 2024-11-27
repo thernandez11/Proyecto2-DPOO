@@ -4,8 +4,8 @@ import componentes.Profesor;
 import java.io.*;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
+import persistencia.PersistenciaProfesores;
 
 public class ControladorProfesor {
 
@@ -45,24 +45,16 @@ public class ControladorProfesor {
 	
 	// Guardar profesores en un archivo
     public void guardarProfesoresEnArchivo(String nombreArchivo) throws IOException {
-        String directorioRelativo = "Persistencia"; 
+        String directorioRelativo = "datos";
         File directorio = new File(directorioRelativo);
-        
+
         if (!directorio.exists()) {
             directorio.mkdirs();
         }
 
         File archivo = new File(directorio, nombreArchivo);
 
-        try (PrintWriter writer = new PrintWriter(new FileWriter(archivo, true))) { // Modo apéndice
-            for (Profesor profesor : profesores.values()) {
-                writer.println(profesor.getLogin() + "," + profesor.getPassword());
-            }
-            System.out.println("Datos de profesores guardados exitosamente en " + archivo.getAbsolutePath());
-        } catch (IOException e) {
-            System.err.println("Error al guardar los datos: " + e.getMessage());
-            throw e;
-        }
+        PersistenciaProfesores.guardarProfesores(archivo.getAbsolutePath(), this);
     }
 
     // Cargar profesores desde un archivo
@@ -71,30 +63,25 @@ public class ControladorProfesor {
             profesores = new HashMap<>();
         }
 
-        String directorioRelativo = "Persistencia"; 
-        File archivo = new File(directorioRelativo, nombreArchivo);
+        String directorioRelativo = "datos";
+        File directorio = new File(directorioRelativo);
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] partes = line.split(",");
-                if (partes.length == 2) {
-                    String login = partes[0];
-                    String password = partes[1];
-                    profesores.put(login, new Profesor(login, password)); 
-                }
-            }
-            System.out.println("Datos de profesores cargados exitosamente desde " + archivo.getAbsolutePath());
-        } catch (FileNotFoundException e) {
-            System.out.println("El archivo no existe. Se creará al cerrar la aplicacion.");
-        } catch (IOException e) {
-            System.err.println("Error al cargar los datos: " + e.getMessage());
-            throw e;
+        if (!directorio.exists()) {
+            directorio.mkdir();
+        }
+
+        File archivo = new File(directorio, nombreArchivo);
+
+        if (!archivo.exists()) {
+            archivo.createNewFile();
+            System.out.println("No existe el archivo " + nombreArchivo + ". Se ha creado uno nuevo");
+        } else {
+            PersistenciaProfesores.cargarProfesores(archivo.getAbsolutePath(), this);
         }
     }
 
-    public List<Profesor> getProfesores() {
-        return (List<Profesor>) profesores.values();
+    public Collection<Profesor> getProfesores() {
+        return profesores.values();
     }
 
 }

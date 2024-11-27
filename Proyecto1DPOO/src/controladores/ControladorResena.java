@@ -4,6 +4,7 @@ import componentes.Resena;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import persistencia.PersistenciaResenias;
 
 public class ControladorResena {
 
@@ -42,53 +43,34 @@ public class ControladorResena {
 	
     // Método para guardar reseñas en un archivo
     public void guardarResenasEnArchivo(String nombreArchivo) throws IOException {
-        String directorioRelativo = "Persistencia";
+        String directorioRelativo = "datos";
         File directorio = new File(directorioRelativo);
 
-        // Asegúrate de que el directorio existe
         if (!directorio.exists()) {
-            directorio.mkdirs(); // Crea el directorio si no existe
+            directorio.mkdir();
         }
 
-        // Crea el archivo en la ruta deseada con extensión .txt
-        File archivo = new File(directorio, nombreArchivo + ".txt");
+        File archivo = new File(directorio, nombreArchivo);
 
-        try (PrintWriter writer = new PrintWriter(new FileWriter(archivo))) {
-            for (Resena resena : resenas) {
-                writer.printf("%d,%s,%d,%s,%s%n", resena.getIdActividad(), resena.getOpinion(), 
-                              resena.getRating(), resena.getLoginAutor(), resena.getRolAutor());
-            }
-            System.out.println("Reseñas guardadas exitosamente en " + archivo.getAbsolutePath());
-        } catch (IOException e) {
-            System.err.println("Error al guardar las reseñas: " + e.getMessage());
-            throw e;
-        }
+        PersistenciaResenias.guardarResenias(archivo.getAbsolutePath(), this);
     }
 
     // Método para cargar reseñas desde un archivo
     public void cargarResenasDesdeArchivo(String nombreArchivo) throws IOException {
-        String directorioRelativo = "bin/Persistencia";
-        File archivo = new File(directorioRelativo, nombreArchivo + ".txt");
+        String directorioRelativo = "datos";
+        File directorio = new File(directorioRelativo);
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] partes = line.split(","); // Divide en los atributos
-                if (partes.length == 5) {
-                    int idActividad = Integer.parseInt(partes[0]);
-                    String opinion = partes[1];
-                    int rating = Integer.parseInt(partes[2]);
-                    String loginAutor = partes[3];
-                    String rolAutor = partes[4];
-                    crearResena(idActividad, opinion, rating, loginAutor, rolAutor); // Crea la nueva reseña
-                }
-            }
-            System.out.println("Reseñas cargadas exitosamente desde " + archivo.getAbsolutePath());
-        } catch (FileNotFoundException e) {
-            System.out.println("El archivo no existe. Se creará al cerrar la aplicacion.");
-        } catch (IOException e) {
-            System.err.println("Error al cargar las reseñas: " + e.getMessage());
-            throw e; // Propagar la excepción para manejarla más arriba si es necesario
+        if (!directorio.exists()) {
+            directorio.mkdir();
+        }
+
+        File archivo = new File(directorio, nombreArchivo);
+
+        if (!archivo.exists()) {
+            archivo.createNewFile();
+            System.out.println("No existe el archivo " + nombreArchivo + ". Se ha creado uno nuevo");
+        } else {
+            PersistenciaResenias.cargarResenias(archivo.getAbsolutePath(), this);
         }
     }
 

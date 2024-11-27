@@ -48,6 +48,9 @@ public class PersistenciaActividades {
     public static void cargarActividades(String archivo, ControladorActividad controladorActividad) throws  IOException{
         String jsonCompleto = new String(Files.readAllBytes(new File(archivo).toPath()));
         JSONArray json = new JSONArray(jsonCompleto);
+        if (json.length() == 0) {
+            return;
+        }
         chargeActivities(controladorActividad, json);
     }
     public static void guardarActividades(String archivo, ControladorActividad controladorActividad) throws  IOException{
@@ -56,9 +59,9 @@ public class PersistenciaActividades {
 
         saveActivities(controladorActividad, jsonArray);
 
-        PrintWriter pw = new PrintWriter(archivo);
-        jsonArray.write(pw, 2, 0);
-        pw.close();
+        try (PrintWriter pw = new PrintWriter(archivo)) {
+            jsonArray.write(pw, 2, 0);
+        }
 
     }
 
@@ -85,28 +88,59 @@ public class PersistenciaActividades {
 
             saveNextActivities(actividad, jActividad);
             savePreviousActivities(actividad, jActividad);
-            jActividad.put(FECHA_LIMITE, actividad.getFechaLimite().toString());
-            jActividad.put(URL, actividad.getUrl());
+            if (actividad.getFechaLimite() != null) {
+                jActividad.put(FECHA_LIMITE, actividad.getFechaLimite().toString());
+            }
+            else {
+                jActividad.put(FECHA_LIMITE, "");
+            }
+            if (actividad.getUrl() != null) {
+                jActividad.put(URL, actividad.getUrl());
+                
+            }else {
+                jActividad.put(URL, "");
+            }
             
             JSONArray jPreguntas = new JSONArray();
-            for (PreguntaAbierta pregunta : actividad.getPreguntasAbiertas()) {
-                JSONObject jPregunta = new JSONObject();
-                saveQuestion(pregunta, jPregunta);
-                jPreguntas.put(jPregunta);
+
+            if (actividad.getPreguntasAbiertas() != null) {
+                for (PreguntaAbierta pregunta : actividad.getPreguntasAbiertas()) {
+                    JSONObject jPregunta = new JSONObject();
+                    saveQuestion(pregunta, jPregunta);
+                    jPreguntas.put(jPregunta);
+                }
             }
-            for (PreguntaMultiple pregunta : actividad.getPreguntasMultiples()) {
-                JSONObject jPregunta = new JSONObject();
-                saveQuestion(pregunta, jPregunta);
-                jPreguntas.put(jPregunta);
+
+            if (actividad.getPreguntasMultiples() != null) {
+                for (PreguntaMultiple pregunta : actividad.getPreguntasMultiples()) {
+                    JSONObject jPregunta = new JSONObject();
+                    saveQuestion(pregunta, jPregunta);
+                    jPreguntas.put(jPregunta);
+                }
+                
             }
-            for (PreguntaVerdaderoFalso pregunta : actividad.getPreguntasVerdaderoFalso()) {
-                JSONObject jPregunta = new JSONObject();
-                saveQuestion(pregunta, jPregunta);
-                jPreguntas.put(jPregunta);
+            
+            if (actividad.getPreguntasVerdaderoFalso() != null) {
+                for (PreguntaVerdaderoFalso pregunta : actividad.getPreguntasVerdaderoFalso()) {
+                    JSONObject jPregunta = new JSONObject();
+                    saveQuestion(pregunta, jPregunta);
+                    jPreguntas.put(jPregunta);
+                }
+                
             }
             jActividad.put(PREGUNTAS, jPreguntas);
-            jActividad.put(NOTA_MINIMA, actividad.getNotaMinima());
+
+            if (actividad.getNotaMinima() != 0) {
+                jActividad.put(NOTA_MINIMA, actividad.getNotaMinima());
+                
+            } else {
+                jActividad.put(NOTA_MINIMA, -1);
+            }
+
+            jArray.put(jActividad);
+
         }
+
 
     }
 
@@ -121,7 +155,7 @@ public class PersistenciaActividades {
         for (int index = 0; index < amountActivities; index++) {
             JSONObject jActividad = jActividades.getJSONObject(index);
             String loginCreador = jActividad.getString(LOGIN_CREADOR);
-            Actividad actividad = new Actividad(Integer.parseInt(ID), loginCreador);
+            Actividad actividad = new Actividad(jActividad.getInt(ID), loginCreador);
             actividad.setTipo(jActividad.getString(TIPO));
             actividad.setDescripcion(jActividad.getString(DESCRIPCION));
             JSONArray jObjetivos = jActividad.getJSONArray(OBJETIVOS);
@@ -145,10 +179,20 @@ public class PersistenciaActividades {
             }
 
             String fechaLimite = jActividad.getString(FECHA_LIMITE);
-            actividad.setFechaLimite(LocalDateTime.parse(fechaLimite));
-            actividad.setUrl(jActividad.getString(URL));
+            if (!fechaLimite.equals("")) {
+                actividad.setFechaLimite(LocalDateTime.parse(fechaLimite));
+            }
+
+            if (!jActividad.getString(URL).equals("")) {
+                actividad.setUrl(jActividad.getString(URL));
+            }
+
             chargeQuestion(jActividad.getJSONArray(PREGUNTAS), actividad);
+
+            if (jActividad.getInt(NOTA_MINIMA) >= 0) {
             actividad.setNotaMinima(jActividad.getInt(NOTA_MINIMA));
+
+            }
             controladorActividades.put(actividad.getId(), actividad);
         }
 
@@ -181,7 +225,6 @@ public class PersistenciaActividades {
                 previousActivities.add(actividadPrevia);
             }
             actividadPrincipal.setActividadesPrevias(previousActivities);
-            
         }
 
     }
@@ -276,7 +319,7 @@ public class PersistenciaActividades {
                         preguntasMultiples.add(preguntaMultiple);
                     }
                 case "PreguntaVerdaderoFalso" ->{
-                        PreguntaVerdaderoFalso preguntaVerdaderoFalso = new PreguntaVerdaderoFalso(jPregunta.getString("textoPregunta"), new ArrayList<Opcion>());
+                        PreguntaVerdaderoFalso preguntaVerdaderoFalso = new PreguntaVerdaderoFalso(jPregunta.getString("textoPregunta"), new ArrayList<>());
                         JSONArray jOpciones = jPregunta.getJSONArray("opciones");
                         List<Opcion> opciones = new ArrayList<>();
                         for (int i = 0; i < jOpciones.length(); i++) {
@@ -289,9 +332,15 @@ public class PersistenciaActividades {
             }
         }
 
-        actividad.setPreguntasAbiertas(preguntasAbiertas);
-        actividad.setPreguntasMultiples(preguntasMultiples);
-        actividad.setPreguntasVerdaderoFalso(preguntasVerdaderoFalso);
+        if (!preguntasAbiertas.isEmpty()) {
+            actividad.setPreguntasAbiertas(preguntasAbiertas);
+        }
+        if (!preguntasMultiples.isEmpty()) {
+            actividad.setPreguntasMultiples(preguntasMultiples);
+        }
+        if (!preguntasVerdaderoFalso.isEmpty()) {
+            actividad.setPreguntasVerdaderoFalso(preguntasVerdaderoFalso);
+        }
 
     }
 }

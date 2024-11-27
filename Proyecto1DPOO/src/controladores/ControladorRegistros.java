@@ -1,12 +1,15 @@
 package controladores;
 
 import componentes.*;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import persistencia.PersistenciaRegistros;
 
 public class ControladorRegistros {
 
@@ -195,11 +198,44 @@ public class ControladorRegistros {
 		}
 	}
 
+
+
 	public HashMap<Integer, ArrayList<RegistroLearningPath>> getRegistrosLp() {
 		return registrosLp;
 	}
 
 	public void setRegistrosLp(HashMap<Integer, ArrayList<RegistroLearningPath>> registrosLp) {
 		this.registrosLp = registrosLp;
+	}
+
+	public void guardarRegistrosEnArchivo(String nombreArchivo) throws IOException {
+		String directorioRelativo = "datos";
+		File directorio = new File(directorioRelativo);
+
+		if (!directorio.exists()) {
+			directorio.mkdir();
+		}
+
+		File archivo = new File(directorio, nombreArchivo);
+
+		PersistenciaRegistros.guardarRegistros(archivo.getAbsolutePath(), this);
+	}
+
+	public void cargarRegistrosDesdeArchivo(String nombreArchivo) throws IOException {
+		String directorioRelativo = "datos";
+		File directorio = new File(directorioRelativo);
+
+		if (!directorio.exists()) {
+			directorio.mkdir();
+		}
+
+		File archivo = new File(directorio, nombreArchivo);
+
+		if (!archivo.exists()) {
+			archivo.createNewFile();
+			System.out.println("No existe el archivo " + nombreArchivo + ". Se ha creado uno nuevo");
+		} else {
+			PersistenciaRegistros.cargarRegistros(archivo.getAbsolutePath(), this);
+		}
 	}
 }

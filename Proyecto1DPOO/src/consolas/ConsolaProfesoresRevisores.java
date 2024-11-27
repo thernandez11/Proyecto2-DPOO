@@ -103,16 +103,20 @@ public class ConsolaProfesoresRevisores {
 	
 	//Salvar y cargar datos
 	private void salvarDatos() throws IOException {
-		EC.guardarEstudiantesEnArchivo("estudiantes.txt");
-		PC.guardarProfesoresEnArchivo("profesores.txt");
-		LPC.guardarLPEnArchivo("learningPaths.txt");
-		RC.guardarResenasEnArchivo("resenas.txt");
+		RGC.guardarRegistrosEnArchivo("registros.json");
+		AC.guardarActividadesEnArchivo("actividades.json");
+		EC.guardarEstudiantesEnArchivo("estudiantes.json");
+		PC.guardarProfesoresEnArchivo("profesores.json");
+		LPC.guardarLPEnArchivo("learningPaths.json");
+		RC.guardarResenasEnArchivo("resenas.json");
 	}
 	private void cargarDatos() throws IOException {
-		EC.cargarEstudiantesDesdeArchivo("estudiantes.txt");
-		PC.cargarProfesoresDesdeArchivo("profesores.txt");
-		LPC.cargarLPDesdeArchivo("learningPaths.txt");
-		RC.cargarResenasDesdeArchivo("resenas.txt");
+		RGC.cargarRegistrosDesdeArchivo("registros.json");
+		AC.guardarActividadesEnArchivo("actividades.json");
+		EC.cargarEstudiantesDesdeArchivo("estudiantes.json");
+		PC.cargarProfesoresDesdeArchivo("profesores.json");
+		LPC.cargarLPDesdeArchivo("learningPaths.json");
+		RC.cargarResenasDesdeArchivo("resenas.json");
 	}
 	
 	//Registrar y ingresar profesores

@@ -23,6 +23,9 @@ public class PersistenciaEstudiantes {
         String jsonCompleto = new String(Files.readAllBytes(new File(RUTA_ARCHIVO).toPath()));
 
         JSONArray json = new JSONArray(jsonCompleto);
+        if (json.length() == 0) {
+            return;
+        }
         loadEstudiantes(controladorEstudiante, json);
     }
 

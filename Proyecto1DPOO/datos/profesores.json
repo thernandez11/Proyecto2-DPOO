@@ -1,0 +1,22 @@
+[
+  {
+    "password": "profesor3",
+    "login": "profesor3"
+  },
+  {
+    "password": "profesor2",
+    "login": "profesor2"
+  },
+  {
+    "password": "password",
+    "login": "ProfesorCreado"
+  },
+  {
+    "password": "admin",
+    "login": "admin"
+  },
+  {
+    "password": "profesor",
+    "login": "profesor"
+  }
+]
